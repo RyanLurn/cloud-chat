@@ -18,7 +18,6 @@ import type * as auth_lib_env from "../auth/lib/env.js";
 import type * as auth_lib_utils from "../auth/lib/utils.js";
 import type * as auth_webhook_userEndpointHandler from "../auth/webhook/userEndpointHandler.js";
 import type * as auth_webhook_verifyWebhook from "../auth/webhook/verifyWebhook.js";
-import type * as chat_schemas_chat from "../chat/schemas/chat.js";
 import type * as http from "../http.js";
 import type * as lib_systemFields from "../lib/systemFields.js";
 
@@ -36,7 +35,6 @@ declare const fullApi: ApiFromModules<{
   "auth/lib/utils": typeof auth_lib_utils;
   "auth/webhook/userEndpointHandler": typeof auth_webhook_userEndpointHandler;
   "auth/webhook/verifyWebhook": typeof auth_webhook_verifyWebhook;
-  "chat/schemas/chat": typeof chat_schemas_chat;
   http: typeof http;
   "lib/systemFields": typeof lib_systemFields;
 }>;

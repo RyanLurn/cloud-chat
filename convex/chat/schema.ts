@@ -6,7 +6,7 @@ const chatFields = {
   title: v.string(),
   lastOpenTime: v.number(),
   isPublic: v.boolean(),
-  userId: v.id("user")
+  userId: v.id("users")
 };
 
 const ChatInputSchema = v.object(chatFields);
