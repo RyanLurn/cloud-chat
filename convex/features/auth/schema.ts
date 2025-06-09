@@ -2,7 +2,7 @@ import { v } from "convex/values";
 import { defineTable } from "convex/server";
 
 const userFields = {
-  name: v.string(),
+  tier: v.union(v.literal("free"), v.literal("pro")),
   externalId: v.string()
 };
 
