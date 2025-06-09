@@ -1,4 +1,7 @@
+import AppSidebar from "@/components/app-sidebar/main";
+import AppSidebarTrigger from "@/components/app-sidebar/utils/trigger";
 import ScreenLoader from "@/components/screen-loader";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { SignIn, UserButton } from "@clerk/clerk-react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
@@ -15,14 +18,16 @@ export const Route = createRootRoute({
           </div>
         </Unauthenticated>
         <Authenticated>
-          <main className="h-screen w-screen">
-            <div className="h-full w-full overflow-y-auto">
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="h-screen w-screen">
+              <AppSidebarTrigger />
               <Outlet />
               <div className="fixed top-2 right-2">
                 <UserButton />
               </div>
-            </div>
-          </main>
+            </main>
+          </SidebarProvider>
         </Authenticated>
         <AuthLoading>
           <div className="h-screen w-screen">
