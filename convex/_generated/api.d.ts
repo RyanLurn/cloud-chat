@@ -11,11 +11,13 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference
+  FunctionReference,
 } from "convex/server";
-import type * as features_auth_env from "../features/auth/env.js";
-import type * as features_auth_webhook_userEndpointHandler from "../features/auth/webhook/userEndpointHandler.js";
-import type * as features_auth_webhook_verifyWebhook from "../features/auth/webhook/verifyWebhook.js";
+import type * as auth_functions from "../auth/functions.js";
+import type * as auth_lib_env from "../auth/lib/env.js";
+import type * as auth_lib_utils from "../auth/lib/utils.js";
+import type * as auth_webhook_userEndpointHandler from "../auth/webhook/userEndpointHandler.js";
+import type * as auth_webhook_verifyWebhook from "../auth/webhook/verifyWebhook.js";
 import type * as http from "../http.js";
 
 /**
@@ -27,9 +29,11 @@ import type * as http from "../http.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  "features/auth/env": typeof features_auth_env;
-  "features/auth/webhook/userEndpointHandler": typeof features_auth_webhook_userEndpointHandler;
-  "features/auth/webhook/verifyWebhook": typeof features_auth_webhook_verifyWebhook;
+  "auth/functions": typeof auth_functions;
+  "auth/lib/env": typeof auth_lib_env;
+  "auth/lib/utils": typeof auth_lib_utils;
+  "auth/webhook/userEndpointHandler": typeof auth_webhook_userEndpointHandler;
+  "auth/webhook/verifyWebhook": typeof auth_webhook_verifyWebhook;
   http: typeof http;
 }>;
 export declare const api: FilterApi<

@@ -1,6 +1,6 @@
 import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
-import { env } from "backend/features/auth/env";
+import { env } from "backend/auth/lib/env";
 
 async function verifyWebhook(req: Request): Promise<WebhookEvent | null> {
   const webhook = new Webhook(env.CLERK_WEBHOOK_SECRET);

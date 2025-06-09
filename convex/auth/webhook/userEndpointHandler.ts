@@ -1,7 +1,8 @@
 import { httpAction } from "backend/_generated/server";
-import verifyWebhook from "backend/features/auth/webhook/verifyWebhook";
+import { internal } from "backend/_generated/api";
+import verifyWebhook from "backend/auth/webhook/verifyWebhook";
 
-const userEndpointHandler = httpAction(async (_ctx, req) => {
+const userEndpointHandler = httpAction(async (ctx, req) => {
   const event = await verifyWebhook(req);
   if (!event) {
     return new Response("Error occured", { status: 400 });
@@ -9,13 +10,14 @@ const userEndpointHandler = httpAction(async (_ctx, req) => {
 
   switch (event.type) {
     case "user.created":
-      console.log("User created", event.data);
-      break;
-    case "user.updated":
-      console.log("User updated", event.data);
+      await ctx.runMutation(internal.auth.functions.insertFromClerk, {
+        data: event.data
+      });
       break;
     case "user.deleted":
-      console.log("User deleted", event.data);
+      await ctx.runMutation(internal.auth.functions.deleteFromClerk, {
+        data: event.data
+      });
       break;
     default:
       console.log("Ignored Clerk webhook event", event.type);
