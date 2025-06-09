@@ -20,6 +20,11 @@
     "isolatedModules": true,
     "noEmit": true,
 
+    "baseUrl": ".",
+    "paths": {
+      "backend/*": ["./*"]
+    },
+
     /* My linting rules */
     "noUnusedLocals": true,
     "noUnusedParameters": true,
