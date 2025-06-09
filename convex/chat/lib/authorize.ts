@@ -1,6 +1,6 @@
 import { Id } from "backend/_generated/dataModel";
 import { MutationCtx, QueryCtx } from "backend/_generated/server";
-import getIdentity from "backend/auth/lib/getIdentity";
+import { getCurrentUser } from "backend/auth/lib/authenticate";
 import { ConvexError } from "convex/values";
 
 async function getChatAccess({
@@ -10,7 +10,7 @@ async function getChatAccess({
   ctx: QueryCtx | MutationCtx;
   chatId: Id<"chats">;
 }) {
-  const { tokenIdentifier } = await getIdentity(ctx);
+  const user = await getCurrentUser(ctx);
 
   const chat = await ctx.db.get(chatId);
 
@@ -22,7 +22,7 @@ async function getChatAccess({
     return chat;
   }
 
-  if (chat.userId === tokenIdentifier) {
+  if (chat.userId === user._id) {
     return chat;
   } else {
     throw new ConvexError("Not authorized.");

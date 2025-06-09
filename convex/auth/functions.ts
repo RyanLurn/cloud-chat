@@ -1,7 +1,7 @@
 import { internalMutation } from "backend/_generated/server";
 import { UserJSON, DeletedObjectJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
-import { getUserByExternalId } from "backend/auth/lib/utils";
+import { getUserByExternalId } from "backend/auth/lib/authenticate";
 
 const insertFromClerk = internalMutation({
   args: {

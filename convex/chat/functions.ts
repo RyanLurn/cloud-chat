@@ -1,8 +1,7 @@
 import { mutation, query } from "backend/_generated/server";
 import { v } from "convex/values";
-import getChatAccess from "backend/chat/lib/getChatAccess";
-import getIdentity from "backend/auth/lib/getIdentity";
-import { Id } from "backend/_generated/dataModel";
+import getChatAccess from "backend/chat/lib/authorize";
+import { getCurrentUser } from "backend/auth/lib/authenticate";
 import { ChatOutputSchema } from "backend/chat/schema";
 
 const getChatById = query({
@@ -17,12 +16,12 @@ const getChatById = query({
 const listChatsFromUser = query({
   returns: v.array(ChatOutputSchema),
   handler: async (ctx) => {
-    const { tokenIdentifier } = await getIdentity(ctx);
+    const user = await getCurrentUser(ctx);
 
     const chats = await ctx.db
       .query("chats")
       .withIndex("by_userId_and_lastOpenTime", (query) =>
-        query.eq("userId", tokenIdentifier as Id<"users">)
+        query.eq("userId", user._id)
       )
       .order("desc")
       .collect();
