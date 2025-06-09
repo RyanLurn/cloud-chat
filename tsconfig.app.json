@@ -10,7 +10,8 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "backend/*": ["./convex/*"]
     },
 
     /* Bundler mode */
