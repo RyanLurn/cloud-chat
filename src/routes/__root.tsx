@@ -31,7 +31,7 @@ export const Route = createRootRoute({
         </Authenticated>
         <AuthLoading>
           <div className="h-screen w-screen">
-            <ScreenLoader />
+            <ScreenLoader parentName="Root" />
           </div>
         </AuthLoading>
       </ThemeProvider>

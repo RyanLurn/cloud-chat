@@ -1,15 +1,19 @@
 import { create } from "zustand";
 
+interface NewMessage {
+  name: string;
+  content: string;
+}
+
 interface NewChatStore {
-  isCreating: boolean;
-  startCreating: () => void;
-  stopCreating: () => void;
+  newMessage: NewMessage | null;
+  setNewMessage: (newMessage: NewMessage | null) => void;
 }
 
 const useNewChatStore = create<NewChatStore>()((set) => ({
-  isCreating: false,
-  startCreating: () => set({ isCreating: true }),
-  stopCreating: () => set({ isCreating: false })
+  newMessage: null,
+  setNewMessage: (newMessage: NewMessage | null) => set({ newMessage })
 }));
 
 export default useNewChatStore;
+export type { NewMessage };

@@ -4,9 +4,13 @@ import { api } from "backend/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import type { Doc, Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
-import useGetChatId from "@/features/chat/hooks/use-get-chat-id";
+import { useParams } from "@tanstack/react-router";
+import useHandleNewChat from "@/features/chat/hooks/use-handle-new-chat";
 
 function useHandleSend() {
+  const params = useParams({ strict: false });
+  const handleNewChat = useHandleNewChat();
+
   const setPrompt = usePromptStore((state) => state.setPrompt);
   const startSending = usePromptStore((state) => state.startSending);
   const stopSending = usePromptStore((state) => state.stopSending);
@@ -36,8 +40,6 @@ function useHandleSend() {
     }
   });
 
-  const getChatId = useGetChatId();
-
   const handleSend = useCallback(async () => {
     const prompt = usePromptStore.getState().prompt;
     if (prompt.trim() === "") return;
@@ -45,20 +47,29 @@ function useHandleSend() {
     startSending();
     setPrompt("");
 
-    // Get the chatId to send the prompt to (based on the current path params).
-    // If there is no chatId, create a new chat.
-    const chatId = await getChatId();
-
     const userMessage = {
       role: "user",
       content: prompt,
       name: user?.fullName || "User"
     } as const;
 
-    await addMessageToChat({ ...userMessage, chatId: chatId as Id<"chats"> });
+    let chatId: Id<"chats"> | undefined = params.chatId as Id<"chats">;
+    if (!chatId) {
+      chatId = await handleNewChat(userMessage);
+    }
+
+    await addMessageToChat({ ...userMessage, chatId });
 
     stopSending();
-  }, [addMessageToChat, startSending, stopSending, user, setPrompt, getChatId]);
+  }, [
+    addMessageToChat,
+    handleNewChat,
+    params,
+    setPrompt,
+    startSending,
+    stopSending,
+    user
+  ]);
 
   return handleSend;
 }

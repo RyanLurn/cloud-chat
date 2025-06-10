@@ -30,3 +30,4 @@
     - [ ] Generate response
   - [ ] Handle sending logic
   - [x] Handle new chat logic
+  - [x] Optimistic updates for newly sent messages
