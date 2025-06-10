@@ -17,7 +17,7 @@
     - [x] Getting messages from a chat
     - [x] Add a message to a chat
   - [ ] Convex actions to
-    - [ ] Generate title
+    - [ ] Generate chat title
     - [ ] Generate response
   - [ ] Message-related components
     - [ ] Message content markdown renderer
