@@ -16,9 +16,8 @@ const MessageOutputSchema = v.object({
   ...messageFields
 });
 
-const messagesTable = defineTable(MessageInputSchema).index(
-  "by_userId_and_chatId",
-  ["userId", "chatId"]
-);
+const messagesTable = defineTable(MessageInputSchema).index("by_chatId", [
+  "chatId"
+]);
 
 export { messagesTable, MessageInputSchema, MessageOutputSchema };

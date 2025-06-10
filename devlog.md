@@ -13,9 +13,9 @@
 - [x] Setup React Scan
 - [ ] Simple interaction with Groq
   - [x] Message schema and table
-  - [ ] Convex functions for
-    - [ ] Getting messages from a chat
-    - [ ] Add a message to a chat
+  - [x] Convex functions for
+    - [x] Getting messages from a chat
+    - [x] Add a message to a chat
   - [ ] Convex actions to
     - [ ] Generate title
     - [ ] Generate response
