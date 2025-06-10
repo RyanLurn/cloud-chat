@@ -12,7 +12,7 @@
 
 - [x] Setup React Scan
 - [ ] Simple interaction with Groq
-  - [ ] Message schema and table
+  - [x] Message schema and table
   - [ ] Convex functions for
     - [ ] Getting messages from a chat
     - [ ] Add a message to a chat

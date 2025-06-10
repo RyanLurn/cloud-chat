@@ -11,7 +11,7 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference
+  FunctionReference,
 } from "convex/server";
 import type * as auth_functions from "../auth/functions.js";
 import type * as auth_lib_authenticate from "../auth/lib/authenticate.js";
