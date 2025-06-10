@@ -11,7 +11,7 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference,
+  FunctionReference
 } from "convex/server";
 import type * as ai_lib_env from "../ai/lib/env.js";
 import type * as ai_prompts_titleGenerator from "../ai/prompts/titleGenerator.js";
