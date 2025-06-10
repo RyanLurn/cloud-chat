@@ -21,11 +21,11 @@
     - [x] Message avatar
     - [x] Message bubble
     - [x] Messages list
+  - [x] Prompt-related components
+    - [x] Prompt editor
+    - [x] Prompt buttons
+    - [x] Prompt container
   - [ ] Convex actions to
     - [ ] Generate chat title
     - [ ] Generate response
-  - [ ] Prompt-related components
-    - [ ] Prompt editor
-    - [ ] Prompt buttons
-    - [ ] Prompt container
   - [ ] Handle sending logic
