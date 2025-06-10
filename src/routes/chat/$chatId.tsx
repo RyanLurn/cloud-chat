@@ -1,6 +1,5 @@
 import ScreenLoader from "@/components/screen-loader";
 import ChatMessages from "@/features/chat/components/messages";
-import PromptContainer from "@/features/chat/components/prompt/container";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -20,20 +19,13 @@ function ChatPage() {
     });
     if (!chat) return <ScreenLoader />;
 
-    return (
-      <div className="flex h-full w-full flex-col overflow-y-auto">
-        <div className="mx-auto mt-6 flex w-full max-w-3xl flex-1 flex-col gap-y-9">
-          <ChatMessages chatId={chat._id} />
-          <PromptContainer chatId={chat._id} />
-        </div>
-      </div>
-    );
+    return <ChatMessages chatId={chat._id} />;
   } catch (error) {
     const errorMessage =
       error instanceof ConvexError ? (error.data as string) : "404 Not Found";
 
     return (
-      <div className="flex min-h-svh flex-col items-center justify-center gap-y-4">
+      <div className="flex w-full flex-1 flex-col items-center justify-center gap-y-4">
         <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight text-destructive">
           {errorMessage}
         </h3>

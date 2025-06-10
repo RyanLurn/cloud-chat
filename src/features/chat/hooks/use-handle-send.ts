@@ -4,10 +4,10 @@ import { api } from "backend/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import type { Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useParams } from "@tanstack/react-router";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 
-function useHandleSend({ activeChatId }: { activeChatId?: Id<"chats"> }) {
+function useHandleSend() {
   const setPrompt = usePromptStore((state) => state.setPrompt);
   const startSending = usePromptStore((state) => state.startSending);
   const stopSending = usePromptStore((state) => state.stopSending);
@@ -17,6 +17,8 @@ function useHandleSend({ activeChatId }: { activeChatId?: Id<"chats"> }) {
   const createNewChat = useMutation(api.chat.functions.createNewChat);
 
   const navigate = useNavigate();
+  const params = useParams({ strict: false });
+
   const startCreating = useNewChatStore((state) => state.startCreating);
   const stopCreating = useNewChatStore((state) => state.stopCreating);
 
@@ -27,12 +29,12 @@ function useHandleSend({ activeChatId }: { activeChatId?: Id<"chats"> }) {
     startSending();
     setPrompt("");
 
-    let chatId: Id<"chats"> | undefined = activeChatId;
+    let chatId: Id<"chats"> | undefined = params.chatId as Id<"chats">;
     if (!chatId) {
       startCreating();
       const newChatId = await createNewChat();
       chatId = newChatId;
-      void navigate({ to: "/chat/$chatId", params: { chatId } });
+      await navigate({ to: "/chat/$chatId", params: { chatId } });
       stopCreating();
     }
 
@@ -46,13 +48,13 @@ function useHandleSend({ activeChatId }: { activeChatId?: Id<"chats"> }) {
     stopSending();
   }, [
     addMessageToChat,
-    activeChatId,
     startSending,
     stopSending,
     user,
     setPrompt,
     createNewChat,
     navigate,
+    params,
     startCreating,
     stopCreating
   ]);
