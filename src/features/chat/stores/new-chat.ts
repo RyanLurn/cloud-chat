@@ -1,19 +1,23 @@
 import { create } from "zustand";
 
-interface NewMessage {
+type NewChatFirstMessageType = {
   name: string;
   content: string;
-}
+};
 
 interface NewChatStore {
-  newMessage: NewMessage | null;
-  setNewMessage: (newMessage: NewMessage | null) => void;
+  newChatFirstMessage: NewChatFirstMessageType | null;
+  setNewChatFirstMessage: (
+    newChatFirstMessage: NewChatFirstMessageType | null
+  ) => void;
 }
 
 const useNewChatStore = create<NewChatStore>()((set) => ({
-  newMessage: null,
-  setNewMessage: (newMessage: NewMessage | null) => set({ newMessage })
+  newChatFirstMessage: null,
+  setNewChatFirstMessage: (
+    newChatFirstMessage: NewChatFirstMessageType | null
+  ) => set({ newChatFirstMessage })
 }));
 
 export default useNewChatStore;
-export type { NewMessage };
+export type { NewChatFirstMessageType };

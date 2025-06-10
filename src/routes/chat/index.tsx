@@ -3,8 +3,7 @@ import { useUser } from "@clerk/clerk-react";
 import ScreenLoader from "@/components/screen-loader";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import PromptContainer from "@/features/chat/components/prompt/container";
-import MessageBubble from "@/features/chat/components/message/bubble";
-import { useEffect } from "react";
+import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
 
 export const Route = createFileRoute("/chat/")({
   component: NewChatPage
@@ -12,21 +11,16 @@ export const Route = createFileRoute("/chat/")({
 
 function NewChatPage() {
   const { user } = useUser();
-  const newMessage = useNewChatStore((state) => state.newMessage);
-  const setNewMessage = useNewChatStore((state) => state.setNewMessage);
+  const newChatFirstMessage = useNewChatStore(
+    (state) => state.newChatFirstMessage
+  );
 
-  useEffect(() => {
-    setNewMessage(null);
-  }, [setNewMessage]);
-
-  if (!user) return <ScreenLoader parentName="NewChatPage" />;
+  if (!user) return <ScreenLoader parentName="new chat page" />;
 
   return (
     <>
-      {newMessage ? (
-        <div className="w-full flex-1">
-          <MessageBubble name={newMessage.name} content={newMessage.content} />
-        </div>
+      {newChatFirstMessage ? (
+        <NewChatFirstMessage newChatFirstMessage={newChatFirstMessage} />
       ) : (
         <div className="flex w-full flex-1 flex-col items-center justify-center">
           <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
