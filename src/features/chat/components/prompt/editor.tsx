@@ -1,14 +1,16 @@
-function PromptEditor({
-  prompt,
-  isSending,
-  handlePromptChange,
-  handleSend
-}: {
-  prompt: string;
-  isSending: boolean;
-  handlePromptChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  handleSend: () => Promise<void>;
-}) {
+import useHandleSend from "@/features/chat/hooks/use-handle-send";
+import usePromptStore from "@/features/chat/stores/prompt";
+import type { Id } from "backend/_generated/dataModel";
+
+function PromptEditor({ chatId }: { chatId: Id<"chats"> }) {
+  const prompt = usePromptStore((state) => state.prompt);
+  const isSending = usePromptStore((state) => state.isSending);
+  const setPrompt = usePromptStore((state) => state.setPrompt);
+  const handleSend = useHandleSend({ chatId });
+
+  function handlePromptChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
+    setPrompt(event.target.value);
+  }
   async function handleKeyDown(
     event: React.KeyboardEvent<HTMLTextAreaElement>
   ) {

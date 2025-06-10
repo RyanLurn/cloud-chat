@@ -1,13 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { ArrowUp, FilePlus, Loader2 } from "lucide-react";
+import SendButton from "@/features/chat/components/prompt/options/send";
+import usePromptStore from "@/features/chat/stores/prompt";
+import type { Id } from "backend/_generated/dataModel";
+import { FilePlus } from "lucide-react";
 
-function PromptOptions({
-  isSending,
-  handleSend
-}: {
-  isSending: boolean;
-  handleSend: () => Promise<void>;
-}) {
+function PromptOptions({ chatId }: { chatId: Id<"chats"> }) {
+  const isSending = usePromptStore((state) => state.isSending);
+
   return (
     <div className="flex w-full justify-between">
       <div className="flex gap-x-2">
@@ -16,13 +15,7 @@ function PromptOptions({
         </Button>
       </div>
       <div className="flex gap-x-2">
-        <Button
-          size="icon"
-          disabled={isSending}
-          onClick={() => void handleSend()}
-        >
-          {isSending ? <Loader2 className="animate-spin" /> : <ArrowUp />}
-        </Button>
+        <SendButton chatId={chatId} />
       </div>
     </div>
   );

@@ -29,3 +29,4 @@
     - [ ] Generate chat title
     - [ ] Generate response
   - [ ] Handle sending logic
+  - [ ] Handle new chat logic
