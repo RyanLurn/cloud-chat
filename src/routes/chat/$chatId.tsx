@@ -1,5 +1,6 @@
 import ScreenLoader from "@/components/screen-loader";
 import ChatMessages from "@/features/chat/components/messages";
+import PromptContainer from "@/features/chat/components/prompt/container";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -17,9 +18,13 @@ function ChatPage() {
     const chat = useQuery(api.chat.functions.getChatById, {
       chatId: chatId as Id<"chats">
     });
-    if (!chat) return <ScreenLoader />;
 
-    return <ChatMessages chatId={chat._id} />;
+    return (
+      <>
+        {chat ? <ChatMessages chatId={chat._id} /> : <ScreenLoader />}
+        <PromptContainer />
+      </>
+    );
   } catch (error) {
     const errorMessage =
       error instanceof ConvexError ? (error.data as string) : "404 Not Found";

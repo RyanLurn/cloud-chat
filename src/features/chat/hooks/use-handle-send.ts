@@ -23,6 +23,8 @@ function useHandleSend() {
     startSending();
     setPrompt("");
 
+    // Get the chatId to send the prompt to (based on the current path params).
+    // If there is no chatId, create a new chat.
     const chatId = await getChatId();
 
     const userMessage = {
