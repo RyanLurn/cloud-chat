@@ -1,10 +1,8 @@
 import { Button } from "@/components/ui/button";
-import SendButton from "@/features/chat/components/prompt/options/send";
 import usePromptStore from "@/features/chat/stores/prompt";
-import type { Id } from "backend/_generated/dataModel";
-import { FilePlus } from "lucide-react";
+import { ArrowUp, FilePlus, Loader2 } from "lucide-react";
 
-function PromptOptions({ chatId }: { chatId: Id<"chats"> }) {
+function PromptOptions({ handleSend }: { handleSend: () => Promise<void> }) {
   const isSending = usePromptStore((state) => state.isSending);
 
   return (
@@ -15,7 +13,13 @@ function PromptOptions({ chatId }: { chatId: Id<"chats"> }) {
         </Button>
       </div>
       <div className="flex gap-x-2">
-        <SendButton chatId={chatId} />
+        <Button
+          size="icon"
+          disabled={isSending}
+          onClick={() => void handleSend()}
+        >
+          {isSending ? <Loader2 className="animate-spin" /> : <ArrowUp />}
+        </Button>
       </div>
     </div>
   );

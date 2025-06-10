@@ -1,12 +1,9 @@
-import useHandleSend from "@/features/chat/hooks/use-handle-send";
 import usePromptStore from "@/features/chat/stores/prompt";
-import type { Id } from "backend/_generated/dataModel";
 
-function PromptEditor({ chatId }: { chatId: Id<"chats"> }) {
+function PromptEditor({ handleSend }: { handleSend: () => Promise<void> }) {
   const prompt = usePromptStore((state) => state.prompt);
   const isSending = usePromptStore((state) => state.isSending);
   const setPrompt = usePromptStore((state) => state.setPrompt);
-  const handleSend = useHandleSend({ chatId });
 
   function handlePromptChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
     setPrompt(event.target.value);
