@@ -6,7 +6,7 @@ import { memo } from "react";
 const ChatGroupAction = memo(function ChatGroupAction() {
   return (
     <SidebarGroupAction title="New chat" asChild>
-      <Link to="/">
+      <Link to="/chat">
         <Plus />
       </Link>
     </SidebarGroupAction>

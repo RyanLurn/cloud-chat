@@ -4,8 +4,7 @@ import { api } from "backend/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import type { Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
-import { useNavigate, useParams } from "@tanstack/react-router";
-import useNewChatStore from "@/features/chat/stores/new-chat";
+import useGetChatId from "@/features/chat/hooks/use-get-chat-id";
 
 function useHandleSend() {
   const setPrompt = usePromptStore((state) => state.setPrompt);
@@ -14,13 +13,8 @@ function useHandleSend() {
 
   const { user } = useUser();
   const addMessageToChat = useMutation(api.message.functions.addMessageToChat);
-  const createNewChat = useMutation(api.chat.functions.createNewChat);
 
-  const navigate = useNavigate();
-  const params = useParams({ strict: false });
-
-  const startCreating = useNewChatStore((state) => state.startCreating);
-  const stopCreating = useNewChatStore((state) => state.stopCreating);
+  const getChatId = useGetChatId();
 
   const handleSend = useCallback(async () => {
     const prompt = usePromptStore.getState().prompt;
@@ -29,14 +23,7 @@ function useHandleSend() {
     startSending();
     setPrompt("");
 
-    let chatId: Id<"chats"> | undefined = params.chatId as Id<"chats">;
-    if (!chatId) {
-      startCreating();
-      const newChatId = await createNewChat();
-      chatId = newChatId;
-      await navigate({ to: "/chat/$chatId", params: { chatId } });
-      stopCreating();
-    }
+    const chatId = await getChatId();
 
     const userMessage = {
       role: "user",
@@ -44,20 +31,10 @@ function useHandleSend() {
       name: user?.fullName || "User"
     } as const;
 
-    await addMessageToChat({ ...userMessage, chatId });
+    await addMessageToChat({ ...userMessage, chatId: chatId as Id<"chats"> });
+
     stopSending();
-  }, [
-    addMessageToChat,
-    startSending,
-    stopSending,
-    user,
-    setPrompt,
-    createNewChat,
-    navigate,
-    params,
-    startCreating,
-    stopCreating
-  ]);
+  }, [addMessageToChat, startSending, stopSending, user, setPrompt, getChatId]);
 
   return handleSend;
 }
