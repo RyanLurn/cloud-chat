@@ -6,7 +6,6 @@ import type { Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
 
 function useHandleSend({ chatId }: { chatId: Id<"chats"> }) {
-  const prompt = usePromptStore((state) => state.prompt);
   const setPrompt = usePromptStore((state) => state.setPrompt);
   const startSending = usePromptStore((state) => state.startSending);
   const stopSending = usePromptStore((state) => state.stopSending);
@@ -16,6 +15,7 @@ function useHandleSend({ chatId }: { chatId: Id<"chats"> }) {
 
   const handleSend = useCallback(async () => {
     startSending();
+    const prompt = usePromptStore.getState().prompt;
     const userMessage = {
       role: "user",
       content: prompt,
@@ -24,15 +24,7 @@ function useHandleSend({ chatId }: { chatId: Id<"chats"> }) {
     setPrompt("");
     await addMessageToChat({ ...userMessage, chatId });
     stopSending();
-  }, [
-    addMessageToChat,
-    chatId,
-    prompt,
-    startSending,
-    stopSending,
-    user,
-    setPrompt
-  ]);
+  }, [addMessageToChat, chatId, startSending, stopSending, user, setPrompt]);
 
   return handleSend;
 }
