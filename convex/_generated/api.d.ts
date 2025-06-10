@@ -13,6 +13,9 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as ai_lib_env from "../ai/lib/env.js";
+import type * as ai_prompts_titleGenerator from "../ai/prompts/titleGenerator.js";
+import type * as ai_providers_groq from "../ai/providers/groq.js";
 import type * as auth_functions from "../auth/functions.js";
 import type * as auth_lib_authenticate from "../auth/lib/authenticate.js";
 import type * as auth_lib_env from "../auth/lib/env.js";
@@ -33,6 +36,9 @@ import type * as message_functions from "../message/functions.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "ai/lib/env": typeof ai_lib_env;
+  "ai/prompts/titleGenerator": typeof ai_prompts_titleGenerator;
+  "ai/providers/groq": typeof ai_providers_groq;
   "auth/functions": typeof auth_functions;
   "auth/lib/authenticate": typeof auth_lib_authenticate;
   "auth/lib/env": typeof auth_lib_env;

@@ -4,6 +4,22 @@ import getChatAccess from "backend/chat/lib/authorize";
 import { getCurrentUser } from "backend/auth/lib/authenticate";
 import { ChatOutputSchema } from "backend/chat/schema";
 
+const createNewChat = mutation({
+  returns: v.id("chats"),
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+
+    const newChatId = await ctx.db.insert("chats", {
+      title: "New chat",
+      lastOpenTime: Date.now(),
+      isPublic: false,
+      userId: user._id
+    });
+
+    return newChatId;
+  }
+});
+
 const getChatById = query({
   args: { chatId: v.id("chats") },
   returns: ChatOutputSchema,
@@ -39,4 +55,4 @@ const openChat = mutation({
   }
 });
 
-export { getChatById, listChatsFromUser, openChat };
+export { createNewChat, getChatById, listChatsFromUser, openChat };
