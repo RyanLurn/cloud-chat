@@ -16,14 +16,14 @@
   - [x] Convex functions for
     - [x] Getting messages from a chat
     - [x] Add a message to a chat
+  - [x] Message-related components
+    - [x] Message content markdown renderer
+    - [x] Message avatar
+    - [x] Message bubble
+    - [x] Messages list
   - [ ] Convex actions to
     - [ ] Generate chat title
     - [ ] Generate response
-  - [ ] Message-related components
-    - [ ] Message content markdown renderer
-    - [ ] Message avatar
-    - [ ] Message bubble
-    - [ ] Messages list
   - [ ] Prompt-related components
     - [ ] Prompt editor
     - [ ] Prompt buttons
