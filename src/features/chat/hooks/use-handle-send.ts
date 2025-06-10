@@ -2,7 +2,7 @@ import usePromptStore from "@/features/chat/stores/prompt";
 import { useMutation } from "convex/react";
 import { api } from "backend/_generated/api";
 import { useUser } from "@clerk/clerk-react";
-import type { Id } from "backend/_generated/dataModel";
+import type { Doc, Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
 import useGetChatId from "@/features/chat/hooks/use-get-chat-id";
 
@@ -12,7 +12,29 @@ function useHandleSend() {
   const stopSending = usePromptStore((state) => state.stopSending);
 
   const { user } = useUser();
-  const addMessageToChat = useMutation(api.message.functions.addMessageToChat);
+  const addMessageToChat = useMutation(
+    api.message.functions.addMessageToChat
+  ).withOptimisticUpdate((localStore, args) => {
+    const existingMessages = localStore.getQuery(
+      api.message.functions.listMessagesFromChat,
+      { chatId: args.chatId }
+    );
+
+    if (existingMessages) {
+      const optimisticMessage: Doc<"messages"> = {
+        _id: crypto.randomUUID() as Id<"messages">,
+        _creationTime: Date.now(),
+        userId: user?.id as Id<"users">,
+        ...args
+      };
+
+      localStore.setQuery(
+        api.message.functions.listMessagesFromChat,
+        { chatId: args.chatId },
+        [...existingMessages, optimisticMessage]
+      );
+    }
+  });
 
   const getChatId = useGetChatId();
 
