@@ -20,6 +20,9 @@ importers:
       '@clerk/themes':
         specifier: ^2.2.49
         version: 2.2.49
+      '@convex-dev/react-query':
+        specifier: 0.0.0-alpha.8
+        version: 0.0.0-alpha.8(@tanstack/react-query@5.80.6(react@19.1.0))(convex@1.24.8(@clerk/clerk-react@5.31.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))
       '@radix-ui/react-avatar':
         specifier: ^1.1.10
         version: 1.1.10(@types/react-dom@19.1.6(@types/react@19.1.6))(@types/react@19.1.6)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -316,6 +319,12 @@ packages:
   '@clerk/types@4.60.0':
     resolution: {integrity: sha512-60u/Z3VD0lgepsySUPyFM1MV5cwhMwouN63na5g9+qm3PpaTE2kN4DeW9Nq6t1YB0TFpVEKIb1r8U6EOWPa01A==}
     engines: {node: '>=18.17.0'}
+
+  '@convex-dev/react-query@0.0.0-alpha.8':
+    resolution: {integrity: sha512-Rv/q7/CplU75f7ckBd2vh+HoeeQ0tOrjwMl14Hk7D/03e55oUIU0TV5JYYzC79ZQyyAtoj7CmCo5ZxcmtKNv1Q==}
+    peerDependencies:
+      '@tanstack/react-query': ^5.0.0
+      convex: ^1.17.0
 
   '@esbuild/aix-ppc64@0.25.2':
     resolution: {integrity: sha512-wCIboOL2yXZym2cgm6mlA742s9QeJ8DjGVaL39dLN4rRwrOgOyYSnOaFPhKZGLb2ngj4EyfAFjsNJwPXZvseag==}
@@ -1256,6 +1265,14 @@ packages:
   '@tanstack/history@1.120.17':
     resolution: {integrity: sha512-k07LFI4Qo074IIaWzT/XjD0KlkGx2w1V3fnNtclKx0oAl8z4O9kCh6za+FPEIRe98xLgNFEiddDbJeAYGSlPtw==}
     engines: {node: '>=12'}
+
+  '@tanstack/query-core@5.80.6':
+    resolution: {integrity: sha512-nl7YxT/TAU+VTf+e2zTkObGTyY8YZBMnbgeA1ee66lIVqzKlYursAII6z5t0e6rXgwUMJSV4dshBTNacNpZHbQ==}
+
+  '@tanstack/react-query@5.80.6':
+    resolution: {integrity: sha512-izX+5CnkpON3NQGcEm3/d7LfFQNo9ZpFtX2QsINgCYK9LT2VCIdi8D3bMaMSNhrAJCznRoAkFic76uvLroALBw==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@tanstack/react-router-devtools@1.120.20':
     resolution: {integrity: sha512-8wYUBdhaMQLo+f5GlJ31WK3T5gpQWetIG7bEGbhrgmd8Z6nZbUYfq10BtVnIwhJwiQa/39Fi9778/09N13l00A==}
@@ -2805,6 +2822,11 @@ snapshots:
     dependencies:
       csstype: 3.1.3
 
+  '@convex-dev/react-query@0.0.0-alpha.8(@tanstack/react-query@5.80.6(react@19.1.0))(convex@1.24.8(@clerk/clerk-react@5.31.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))':
+    dependencies:
+      '@tanstack/react-query': 5.80.6(react@19.1.0)
+      convex: 1.24.8(@clerk/clerk-react@5.31.9(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
+
   '@esbuild/aix-ppc64@0.25.2':
     optional: true
 
@@ -3485,6 +3507,13 @@ snapshots:
       - typescript
 
   '@tanstack/history@1.120.17': {}
+
+  '@tanstack/query-core@5.80.6': {}
+
+  '@tanstack/react-query@5.80.6(react@19.1.0)':
+    dependencies:
+      '@tanstack/query-core': 5.80.6
+      react: 19.1.0
 
   '@tanstack/react-router-devtools@1.120.20(@tanstack/react-router@1.120.20(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(@tanstack/router-core@1.120.19)(csstype@3.1.3)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(tiny-invariant@1.3.3)':
     dependencies:

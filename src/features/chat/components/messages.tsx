@@ -33,6 +33,7 @@ const ChatMessages = memo(function ChatMessages({
     return (
       <div className="w-full flex-1">
         <MessageBubble
+          role="user"
           name={newChatFirstMessage.name}
           content={newChatFirstMessage.content}
         />
@@ -47,6 +48,7 @@ const ChatMessages = memo(function ChatMessages({
       {messages.map((message) => (
         <MessageBubble
           key={message._id}
+          role={message.role}
           name={message.name}
           content={message.content}
         />

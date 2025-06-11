@@ -10,6 +10,7 @@ const NewChatFirstMessage = memo(function NewChatFirstMessage({
   return (
     <div className="w-full flex-1">
       <MessageBubble
+        role="user"
         name={newChatFirstMessage.name}
         content={newChatFirstMessage.content}
       />
