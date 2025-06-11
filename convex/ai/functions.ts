@@ -50,7 +50,6 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   }
 
   const { streamMessageId, chatId } = result.data;
-  console.log("streamMessageId", streamMessageId);
 
   try {
     const messages = await ctx.runQuery(

@@ -2,19 +2,20 @@ import { create } from "zustand";
 
 interface AiStreamStore {
   content: string;
-  isStreaming: boolean;
+  streamMessageId: string | null;
   addContent: (newContent: string) => void;
-  startStreaming: () => void;
-  stopStreaming: () => void;
+  clearContent: () => void;
+  setStreamMessageId: (streamMessageId: string | null) => void;
 }
 
 const useAiStreamStore = create<AiStreamStore>()((set) => ({
   content: "",
-  isStreaming: false,
+  streamMessageId: null,
   addContent: (newContent: string) =>
     set((state) => ({ content: state.content + newContent })),
-  startStreaming: () => set({ isStreaming: true }),
-  stopStreaming: () => set({ isStreaming: false })
+  clearContent: () => set({ content: "" }),
+  setStreamMessageId: (streamMessageId: string | null) =>
+    set({ streamMessageId })
 }));
 
 export default useAiStreamStore;

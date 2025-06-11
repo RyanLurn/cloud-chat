@@ -7,12 +7,13 @@ import { useCallback } from "react";
 function useHandleAiStream() {
   const { getToken } = useAuth();
   const addContent = useAiStreamStore((state) => state.addContent);
-  const startStreaming = useAiStreamStore((state) => state.startStreaming);
-  const stopStreaming = useAiStreamStore((state) => state.stopStreaming);
-
+  const clearContent = useAiStreamStore((state) => state.clearContent);
+  const setStreamMessageId = useAiStreamStore(
+    (state) => state.setStreamMessageId
+  );
   const handleAiStream = useCallback(
     async ({ streamMessageId, chatId }: AiStreamRequestBodyType) => {
-      startStreaming();
+      setStreamMessageId(streamMessageId);
       try {
         const token = await getToken({ template: "convex" });
         const response = await fetchAiStream({
@@ -40,9 +41,10 @@ function useHandleAiStream() {
       } catch (error) {
         console.error(error);
       }
-      stopStreaming();
+      setStreamMessageId(null);
+      clearContent();
     },
-    [getToken, addContent, startStreaming, stopStreaming]
+    [getToken, addContent, clearContent, setStreamMessageId]
   );
 
   return handleAiStream;

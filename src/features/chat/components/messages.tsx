@@ -15,10 +15,10 @@ const ChatMessages = memo(function ChatMessages({
 }: {
   chatId: Id<"chats">;
 }) {
+  const streamMessageId = useAiStreamStore((state) => state.streamMessageId);
   const messages = useQuery(api.message.functions.listMessagesFromChat, {
     chatId
   });
-  const isStreaming = useAiStreamStore((state) => state.isStreaming);
 
   // Optimistic update for new chat case
   const newChatFirstMessage = useNewChatStore(
@@ -41,15 +41,18 @@ const ChatMessages = memo(function ChatMessages({
 
   return (
     <div className="flex w-full flex-1 flex-col gap-y-6">
-      {messages.map((message) => (
-        <MessageBubble
-          key={message._id}
-          role={message.role}
-          name={message.name}
-          content={message.content}
-        />
-      ))}
-      {isStreaming && <StreamMessageBubble />}
+      {messages.map((message) => {
+        if (message._id === (streamMessageId as Id<"messages">)) return null;
+        return (
+          <MessageBubble
+            key={message._id}
+            role={message.role}
+            name={message.name}
+            content={message.content}
+          />
+        );
+      })}
+      {streamMessageId && <StreamMessageBubble />}
     </div>
   );
 });
