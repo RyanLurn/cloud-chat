@@ -1,6 +1,8 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
+import StreamMessageBubble from "@/features/chat/components/message/stream";
 import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
+import useAiStreamStore from "@/features/chat/stores/ai-stream";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -16,6 +18,7 @@ const ChatMessages = memo(function ChatMessages({
   const messages = useQuery(api.message.functions.listMessagesFromChat, {
     chatId
   });
+  const isStreaming = useAiStreamStore((state) => state.isStreaming);
 
   // Optimistic update for new chat case
   const newChatFirstMessage = useNewChatStore(
@@ -46,6 +49,7 @@ const ChatMessages = memo(function ChatMessages({
           content={message.content}
         />
       ))}
+      {isStreaming && <StreamMessageBubble />}
     </div>
   );
 });

@@ -2,10 +2,11 @@ import usePromptStore from "@/features/chat/stores/prompt";
 import { useMutation } from "convex/react";
 import { api } from "backend/_generated/api";
 import { useUser } from "@clerk/clerk-react";
-import type { Doc, Id } from "backend/_generated/dataModel";
+import type { Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
 import { useParams } from "@tanstack/react-router";
 import useHandleNewChat from "@/features/chat/hooks/use-handle-new-chat";
+import useHandleAiStream from "@/features/chat/hooks/use-handle-ai-stream";
 
 function useHandleSend() {
   const params = useParams({ strict: false });
@@ -16,29 +17,10 @@ function useHandleSend() {
   const stopSending = usePromptStore((state) => state.stopSending);
 
   const { user } = useUser();
-  const addMessageToChat = useMutation(
-    api.message.functions.addMessageToChat
-  ).withOptimisticUpdate((localStore, args) => {
-    const existingMessages = localStore.getQuery(
-      api.message.functions.listMessagesFromChat,
-      { chatId: args.chatId }
-    );
-
-    if (existingMessages) {
-      const optimisticMessage: Doc<"messages"> = {
-        _id: crypto.randomUUID() as Id<"messages">,
-        _creationTime: Date.now(),
-        userId: user?.id as Id<"users">,
-        ...args
-      };
-
-      localStore.setQuery(
-        api.message.functions.listMessagesFromChat,
-        { chatId: args.chatId },
-        [...existingMessages, optimisticMessage]
-      );
-    }
-  });
+  const addMessagePairToChat = useMutation(
+    api.message.functions.addMessagePairToChat
+  );
+  const handleAiStream = useHandleAiStream();
 
   const handleSend = useCallback(async () => {
     const prompt = usePromptStore.getState().prompt;
@@ -58,17 +40,22 @@ function useHandleSend() {
       chatId = await handleNewChat(userMessage);
     }
 
-    await addMessageToChat({ ...userMessage, chatId });
+    const { assistantMessageId } = await addMessagePairToChat({
+      ...userMessage,
+      chatId
+    });
+    await handleAiStream({ streamMessageId: assistantMessageId, chatId });
 
     stopSending();
   }, [
-    addMessageToChat,
+    addMessagePairToChat,
     handleNewChat,
     params,
     setPrompt,
     startSending,
     stopSending,
-    user
+    user,
+    handleAiStream
   ]);
 
   return handleSend;
