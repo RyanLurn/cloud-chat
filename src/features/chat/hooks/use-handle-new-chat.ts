@@ -17,6 +17,10 @@ function useHandleNewChat() {
     async (newMessage: NewChatFirstMessageType) => {
       setNewChatFirstMessage(newMessage);
       const newChatId = await createNewChat();
+      setNewChatFirstMessage({
+        ...newMessage,
+        chatId: newChatId
+      });
       await navigate({ to: "/chat/$chatId", params: { chatId: newChatId } });
       return newChatId;
     },

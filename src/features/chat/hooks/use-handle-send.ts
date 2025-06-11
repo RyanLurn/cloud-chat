@@ -50,7 +50,7 @@ function useHandleSend() {
     const userMessage = {
       role: "user",
       content: prompt,
-      name: user?.fullName || "User"
+      name: user?.fullName || "You"
     } as const;
 
     let chatId: Id<"chats"> | undefined = params.chatId as Id<"chats">;

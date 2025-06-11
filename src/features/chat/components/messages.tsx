@@ -1,5 +1,6 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
+import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -29,16 +30,8 @@ const ChatMessages = memo(function ChatMessages({
     if (messages) setNewChatFirstMessage(null);
   }, [messages, setNewChatFirstMessage]);
 
-  if (!messages && newChatFirstMessage)
-    return (
-      <div className="w-full flex-1">
-        <MessageBubble
-          role="user"
-          name={newChatFirstMessage.name}
-          content={newChatFirstMessage.content}
-        />
-      </div>
-    );
+  if (!messages && newChatFirstMessage && newChatFirstMessage.chatId === chatId)
+    return <NewChatFirstMessage newChatFirstMessage={newChatFirstMessage} />;
   // End of optimistic update code
 
   if (!messages) return <ScreenLoader parentName="your messages" />;

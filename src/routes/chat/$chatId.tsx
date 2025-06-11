@@ -28,7 +28,7 @@ function ChatPage() {
       <>
         {chat ? (
           <ChatMessages chatId={chat._id} />
-        ) : newChatFirstMessage ? (
+        ) : newChatFirstMessage && newChatFirstMessage.chatId === chatId ? (
           <NewChatFirstMessage newChatFirstMessage={newChatFirstMessage} />
         ) : (
           <ScreenLoader parentName="your chat" />
