@@ -1,7 +1,7 @@
-import { api } from "backend/_generated/api";
+import { api, internal } from "backend/_generated/api";
 import { action, httpAction } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
-import { generateText, streamText } from "ai";
+import { APICallError, generateText, streamText } from "ai";
 import groq from "backend/ai/providers/groq";
 import {
   formatPromptForTitleGenerator,
@@ -10,6 +10,7 @@ import {
 import { getCurrentIdentity } from "backend/auth/lib/authenticate";
 import { Id } from "backend/_generated/dataModel";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
+import { hasDelimiter } from "backend/ai/lib/utils";
 
 const generateChatTitle = action({
   args: {
@@ -59,26 +60,54 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
       }
     );
 
-    const result = streamText({
-      model: groq("llama-3.1-8b-instant"),
-      messages
-    });
+    const { readable, writable } = new TransformStream();
+    const writer = writable.getWriter();
+    const textEncoder = new TextEncoder();
 
-    // async function updateStreamMessage() {
-    //   await ctx.runMutation(internal.message.functions.updateStreamMessage, {
-    //     streamMessageId: streamMessageId as Id<"messages">,
-    //     text: await text
-    //   });
-    // }
+    async function streamAiResponse() {
+      let content: string = "";
+      try {
+        const { textStream } = streamText({
+          model: groq("llama-3.1-8b-instant"),
+          messages
+        });
 
-    // void updateStreamMessage();
+        for await (const text of textStream) {
+          content += text;
+          await writer.write(textEncoder.encode(text));
 
-    return result.toTextStreamResponse({
+          if (hasDelimiter(text)) {
+            await ctx.runMutation(
+              internal.message.functions.updateStreamMessage,
+              {
+                streamMessageId: streamMessageId as Id<"messages">,
+                text: content
+              }
+            );
+          }
+        }
+
+        await ctx.runMutation(internal.message.functions.updateStreamMessage, {
+          streamMessageId: streamMessageId as Id<"messages">,
+          text: content
+        });
+
+        await writer.close();
+      } catch (error) {
+        if (error instanceof APICallError) {
+          console.error("AI call error", error);
+          return new Response("Something went wrong", { status: 500 });
+        }
+      }
+    }
+
+    void streamAiResponse();
+
+    return new Response(readable, {
       headers: {
         "Access-Control-Allow-Origin": "*",
         Vary: "origin"
-      },
-      status: 200
+      }
     });
   } catch (error) {
     if (error instanceof ConvexError) {
