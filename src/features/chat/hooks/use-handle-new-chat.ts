@@ -3,7 +3,7 @@ import useNewChatStore, {
 } from "@/features/chat/stores/new-chat";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
-import { useMutation } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import { useCallback } from "react";
 
 function useHandleNewChat() {
@@ -12,6 +12,7 @@ function useHandleNewChat() {
     (state) => state.setNewChatFirstMessage
   );
   const createNewChat = useMutation(api.chat.functions.createNewChat);
+  const generateChatTitle = useAction(api.ai.functions.generateChatTitle);
 
   const handleNewChat = useCallback(
     async (newMessage: NewChatFirstMessageType) => {
@@ -21,10 +22,14 @@ function useHandleNewChat() {
         ...newMessage,
         chatId: newChatId
       });
+      void generateChatTitle({
+        chatId: newChatId,
+        firstMessageContent: newMessage.content
+      });
       await navigate({ to: "/chat/$chatId", params: { chatId: newChatId } });
       return newChatId;
     },
-    [navigate, setNewChatFirstMessage, createNewChat]
+    [navigate, setNewChatFirstMessage, createNewChat, generateChatTitle]
   );
 
   return handleNewChat;

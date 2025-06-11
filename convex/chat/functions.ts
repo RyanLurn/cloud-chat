@@ -55,4 +55,19 @@ const openChat = mutation({
   }
 });
 
-export { createNewChat, getChatById, listChatsFromUser, openChat };
+const updateChatTitle = mutation({
+  args: { chatId: v.id("chats"), newTitle: v.string() },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const chat = await getChatAccess({ ctx, chatId: args.chatId });
+    await ctx.db.patch(chat._id, { title: args.newTitle });
+  }
+});
+
+export {
+  createNewChat,
+  getChatById,
+  listChatsFromUser,
+  openChat,
+  updateChatTitle
+};
