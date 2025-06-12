@@ -2,7 +2,7 @@ import DOMPurify from "dompurify";
 import { marked } from "marked";
 
 function MessageContent({ content }: { content: string }) {
-  const rawHTML = marked.parse(content) as string;
+  const rawHTML = marked.parse(content || "*Thinking...*") as string;
   const trustedHTML = DOMPurify.sanitize(rawHTML);
 
   return (

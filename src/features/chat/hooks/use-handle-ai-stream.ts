@@ -1,23 +1,30 @@
 import fetchAiStream from "@/features/chat/lib/fetch-ai-stream";
-import useAiStreamStore from "@/features/chat/stores/ai-stream";
+import useStreamStore from "@/features/chat/stores/stream";
 import { useAuth } from "@clerk/clerk-react";
-import type { AiStreamRequestBodyType } from "backend/ai/lib/validator";
+import type { Doc, Id } from "backend/_generated/dataModel";
 import { useCallback } from "react";
 
 function useHandleAiStream() {
   const { getToken } = useAuth();
-  const addContent = useAiStreamStore((state) => state.addContent);
-  const setStreamMessageId = useAiStreamStore(
-    (state) => state.setStreamMessageId
+  const addStreamMessage = useStreamStore((state) => state.addStreamMessage);
+  const addStreamingContent = useStreamStore(
+    (state) => state.addStreamingContent
   );
+  const finishStreaming = useStreamStore((state) => state.finishStreaming);
 
   const handleAiStream = useCallback(
-    async ({ streamMessageId, chatId }: AiStreamRequestBodyType) => {
-      setStreamMessageId(streamMessageId);
+    async ({
+      streamMessage,
+      chatId
+    }: {
+      streamMessage: Doc<"messages">;
+      chatId: Id<"chats">;
+    }) => {
+      addStreamMessage(streamMessage);
       try {
         const token = await getToken({ template: "convex" });
         const response = await fetchAiStream({
-          streamMessageId,
+          streamMessageId: streamMessage._id,
           chatId,
           token
         });
@@ -33,17 +40,17 @@ function useHandleAiStream() {
         while (true) {
           const { done, value } = await streamReader.read();
           if (done) {
-            addContent(decoder.decode(value));
+            addStreamingContent(streamMessage._id, decoder.decode(value));
             break;
           }
-          addContent(decoder.decode(value));
+          addStreamingContent(streamMessage._id, decoder.decode(value));
         }
       } catch (error) {
         console.error(error);
       }
-      setStreamMessageId(null);
+      finishStreaming(streamMessage._id);
     },
-    [getToken, addContent, setStreamMessageId]
+    [getToken, addStreamMessage, addStreamingContent, finishStreaming]
   );
 
   return handleAiStream;

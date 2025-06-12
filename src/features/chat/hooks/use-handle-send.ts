@@ -40,11 +40,11 @@ function useHandleSend() {
       chatId = await handleNewChat(userMessage);
     }
 
-    const { assistantMessageId } = await addMessagePairToChat({
+    const { streamMessage } = await addMessagePairToChat({
       ...userMessage,
       chatId
     });
-    await handleAiStream({ streamMessageId: assistantMessageId, chatId });
+    await handleAiStream({ streamMessage, chatId });
 
     stopSending();
   }, [

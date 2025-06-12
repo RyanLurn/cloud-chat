@@ -11,23 +11,34 @@ const addMessagePairToChat = mutation({
     chatId: v.id("chats")
   },
   returns: {
-    assistantMessageId: v.id("messages")
+    streamMessage: MessageOutputSchema
   },
   handler: async (ctx, args) => {
     const chat = await getChatAccess({ ctx, chatId: args.chatId });
     await ctx.db.insert("messages", {
       ...args,
+      isStreaming: false,
       userId: chat.userId
     });
-    const assistantMessageId = await ctx.db.insert("messages", {
+    const assistantMessageInput = {
       role: "assistant",
       content: "",
       name: "Nimbus",
+      isStreaming: true,
       userId: chat.userId,
       chatId: chat._id
-    });
+    } as const;
+    const assistantMessageId = await ctx.db.insert(
+      "messages",
+      assistantMessageInput
+    );
+    const streamMessage = {
+      ...assistantMessageInput,
+      _id: assistantMessageId,
+      _creationTime: Date.now()
+    };
     return {
-      assistantMessageId
+      streamMessage
     };
   }
 });
@@ -50,11 +61,15 @@ const listMessagesFromChat = query({
 const updateStreamMessage = internalMutation({
   args: {
     streamMessageId: v.id("messages"),
-    text: v.string()
+    text: v.string(),
+    isStreaming: v.boolean()
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.streamMessageId, { content: args.text });
+    await ctx.db.patch(args.streamMessageId, {
+      content: args.text,
+      isStreaming: args.isStreaming
+    });
   }
 });
 

@@ -1,4 +1,4 @@
-import useAiStreamStore from "@/features/chat/stores/ai-stream";
+import useStreamStore from "@/features/chat/stores/stream";
 import { api } from "backend/_generated/api";
 import type { Doc, Id } from "backend/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -10,14 +10,14 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
   >(undefined);
   const [isSkipping, setIsSkipping] = useState(false);
 
-  const streamMessageId = useAiStreamStore((state) => state.streamMessageId);
-  const startShowingStream = useAiStreamStore(
-    (state) => state.startShowingStream
+  const streamMessage = useStreamStore((state) =>
+    state.streamMessages.find(
+      (streamMessage) => streamMessage.chatId === chatId
+    )
   );
-  const stopShowingStream = useAiStreamStore(
-    (state) => state.stopShowingStream
+  const removeStreamMessage = useStreamStore(
+    (state) => state.removeStreamMessage
   );
-  const clearContent = useAiStreamStore((state) => state.clearContent);
 
   const messagesQueryResult = useQuery(
     api.message.functions.listMessagesFromChat,
@@ -28,31 +28,48 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
         }
   );
 
-  useEffect(() => {
-    if (messagesQueryResult)
-      setChatMessages(
-        messagesQueryResult.filter((message) => message._id !== streamMessageId)
-      );
-  }, [streamMessageId, messagesQueryResult]);
+  // useEffect(() => {
+  //   console.log("Chat messages:", chatMessages);
+  //   console.log("Skip status:", isSkipping);
+  //   console.log("Stream message:", streamMessage);
+  //   console.log("Messages query result:", messagesQueryResult);
+  // }, [chatMessages, isSkipping, streamMessage, messagesQueryResult]);
 
   useEffect(() => {
-    if (streamMessageId) {
+    if (messagesQueryResult) setChatMessages(messagesQueryResult);
+    if (streamMessage) {
+      setChatMessages((prev) => {
+        if (prev) {
+          const messages = prev.map((message) => {
+            if (message._id === streamMessage._id) {
+              const newStreamMessage = {
+                ...message,
+                content: streamMessage.content
+              };
+              return newStreamMessage;
+            } else return message;
+          });
+          return messages;
+        }
+      });
+    }
+  }, [streamMessage, messagesQueryResult]);
+
+  useEffect(() => {
+    if (streamMessage?.isStreaming) {
       if (messagesQueryResult) setIsSkipping(true);
     } else setIsSkipping(false);
-  }, [streamMessageId, messagesQueryResult]);
+  }, [streamMessage?.isStreaming, messagesQueryResult]);
 
   useEffect(() => {
-    if (streamMessageId) startShowingStream();
-    if (streamMessageId === null && messagesQueryResult) {
-      stopShowingStream();
-      clearContent();
+    if (streamMessage?.isStreaming === false && messagesQueryResult) {
+      removeStreamMessage(streamMessage._id);
     }
   }, [
-    streamMessageId,
+    streamMessage?.isStreaming,
+    streamMessage?._id,
     messagesQueryResult,
-    startShowingStream,
-    stopShowingStream,
-    clearContent
+    removeStreamMessage
   ]);
 
   return chatMessages;

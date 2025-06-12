@@ -1,15 +1,18 @@
 import MessageAvatar from "@/features/chat/components/message/avatar";
 import MessageContent from "@/features/chat/components/message/content";
-import useAiStreamStore from "@/features/chat/stores/ai-stream";
+import type { Doc } from "backend/_generated/dataModel";
 
-function StreamMessageBubble() {
-  const content = useAiStreamStore((state) => state.content);
+function StreamMessageBubble({
+  streamMessage
+}: {
+  streamMessage: Doc<"messages">;
+}) {
   return (
     <div className="flex gap-x-2">
-      <MessageAvatar role="assistant" name="Nimbus" />
+      <MessageAvatar role={streamMessage.role} name={streamMessage.name} />
       <div className="flex flex-col gap-y-2">
         <div className="text-lg font-semibold">Nimbus</div>
-        <MessageContent content={content || "*Thinking...*"} />
+        <MessageContent content={streamMessage.content || "*Thinking...*"} />
       </div>
     </div>
   );

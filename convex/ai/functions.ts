@@ -67,7 +67,7 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
       let content: string = "";
       try {
         const { textStream } = streamText({
-          model: groq("llama-3.1-8b-instant"),
+          model: groq("meta-llama/llama-4-maverick-17b-128e-instruct"),
           messages
         });
 
@@ -80,7 +80,8 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
           //     internal.message.functions.updateStreamMessage,
           //     {
           //       streamMessageId: streamMessageId as Id<"messages">,
-          //       text: content
+          //       text: content,
+          //       isStreaming: true
           //     }
           //   );
           // }
@@ -88,7 +89,8 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
 
         await ctx.runMutation(internal.message.functions.updateStreamMessage, {
           streamMessageId: streamMessageId as Id<"messages">,
-          text: content
+          text: content,
+          isStreaming: false
         });
 
         await writer.close();
