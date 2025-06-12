@@ -7,10 +7,10 @@ import { useCallback } from "react";
 function useHandleAiStream() {
   const { getToken } = useAuth();
   const addContent = useAiStreamStore((state) => state.addContent);
-  const clearContent = useAiStreamStore((state) => state.clearContent);
   const setStreamMessageId = useAiStreamStore(
     (state) => state.setStreamMessageId
   );
+
   const handleAiStream = useCallback(
     async ({ streamMessageId, chatId }: AiStreamRequestBodyType) => {
       setStreamMessageId(streamMessageId);
@@ -42,9 +42,8 @@ function useHandleAiStream() {
         console.error(error);
       }
       setStreamMessageId(null);
-      clearContent();
     },
-    [getToken, addContent, clearContent, setStreamMessageId]
+    [getToken, addContent, setStreamMessageId]
   );
 
   return handleAiStream;

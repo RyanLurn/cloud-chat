@@ -1,20 +1,18 @@
 import MessageBubble from "@/features/chat/components/message/bubble";
-import type { NewChatFirstMessageType } from "@/features/chat/stores/new-chat";
+import useNewChatStore from "@/features/chat/stores/new-chat";
 import { memo } from "react";
 
-const NewChatFirstMessage = memo(function NewChatFirstMessage({
-  newChatFirstMessage
-}: {
-  newChatFirstMessage: NewChatFirstMessageType;
-}) {
+const NewChatFirstMessage = memo(function NewChatFirstMessage() {
+  const newChatFirstMessage = useNewChatStore(
+    (state) => state.newChatFirstMessage
+  );
+  if (!newChatFirstMessage) return null;
   return (
-    <div className="w-full flex-1">
-      <MessageBubble
-        role="user"
-        name={newChatFirstMessage.name}
-        content={newChatFirstMessage.content}
-      />
-    </div>
+    <MessageBubble
+      role="user"
+      name={newChatFirstMessage.name}
+      content={newChatFirstMessage.content}
+    />
   );
 });
 

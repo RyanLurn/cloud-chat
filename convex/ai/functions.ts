@@ -10,7 +10,7 @@ import {
 import { getCurrentIdentity } from "backend/auth/lib/authenticate";
 import { Id } from "backend/_generated/dataModel";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
-import { hasDelimiter } from "backend/ai/lib/utils";
+// import { hasDelimiter } from "backend/ai/lib/utils";
 
 const generateChatTitle = action({
   args: {
@@ -75,15 +75,15 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
           content += text;
           await writer.write(textEncoder.encode(text));
 
-          if (hasDelimiter(text)) {
-            await ctx.runMutation(
-              internal.message.functions.updateStreamMessage,
-              {
-                streamMessageId: streamMessageId as Id<"messages">,
-                text: content
-              }
-            );
-          }
+          // if (hasDelimiter(text)) {
+          //   await ctx.runMutation(
+          //     internal.message.functions.updateStreamMessage,
+          //     {
+          //       streamMessageId: streamMessageId as Id<"messages">,
+          //       text: content
+          //     }
+          //   );
+          // }
         }
 
         await ctx.runMutation(internal.message.functions.updateStreamMessage, {

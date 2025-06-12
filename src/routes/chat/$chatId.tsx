@@ -2,7 +2,7 @@ import ScreenLoader from "@/components/screen-loader";
 import ChatMessages from "@/features/chat/components/messages";
 import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
 import PromptContainer from "@/features/chat/components/prompt/container";
-import useNewChatStore from "@/features/chat/stores/new-chat";
+import useDisplayNewChatFirstMessage from "@/features/chat/hooks/use-display-new-chat-first-message";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -15,9 +15,10 @@ export const Route = createFileRoute("/chat/$chatId")({
 
 function ChatPage() {
   const { chatId } = Route.useParams();
-  const newChatFirstMessage = useNewChatStore(
-    (state) => state.newChatFirstMessage
-  );
+  const isDisplayed = useDisplayNewChatFirstMessage({
+    chatId: chatId as Id<"chats">,
+    chatMessages: undefined
+  });
 
   try {
     const chat = useQuery(api.chat.functions.getChatById, {
@@ -28,8 +29,10 @@ function ChatPage() {
       <>
         {chat ? (
           <ChatMessages chatId={chat._id} />
-        ) : newChatFirstMessage && newChatFirstMessage.chatId === chatId ? (
-          <NewChatFirstMessage newChatFirstMessage={newChatFirstMessage} />
+        ) : isDisplayed ? (
+          <div className="w-full flex-1">
+            <NewChatFirstMessage />
+          </div>
         ) : (
           <ScreenLoader parentName="your chat" />
         )}
