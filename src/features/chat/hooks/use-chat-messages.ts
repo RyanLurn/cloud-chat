@@ -69,10 +69,7 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
     return chatMessages;
   }, [messages, streamMessage]);
 
-  return {
-    chatMessages,
-    isStreaming: streamMessage?.isStreaming ?? false
-  };
+  return chatMessages;
 }
 
 export default useChatMessages;
