@@ -19,9 +19,9 @@ function useAutoScroll({
   function handleScroll() {
     const container = messagesContainerRef.current;
     if (container) {
-      // const { scrollTop, scrollHeight, clientHeight } = container;
-      // const isAtBottom = scrollTop + clientHeight >= scrollHeight - 5; // 10px threshold
-      setShouldAutoScroll(false);
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      setShouldAutoScroll(isAtBottom);
     }
   }
 

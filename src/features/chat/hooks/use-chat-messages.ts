@@ -2,12 +2,12 @@ import useStreamStore from "@/features/chat/stores/stream";
 import { api } from "backend/_generated/api";
 import type { Doc, Id } from "backend/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
-  const [chatMessages, setChatMessages] = useState<
-    Doc<"messages">[] | undefined
-  >(undefined);
+  const [messages, setMessages] = useState<Doc<"messages">[] | undefined>(
+    undefined
+  );
   const [isSkipping, setIsSkipping] = useState(false);
 
   const streamMessage = useStreamStore((state) =>
@@ -28,30 +28,12 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
         }
   );
 
-  // useEffect(() => {
-  //   console.log("Chat messages:", chatMessages);
-  //   console.log("Skip status:", isSkipping);
-  //   console.log("Stream message:", streamMessage);
-  //   console.log("Messages query result:", messagesQueryResult);
-  // }, [chatMessages, isSkipping, streamMessage, messagesQueryResult]);
-
   useEffect(() => {
-    if (messagesQueryResult) setChatMessages(messagesQueryResult);
-    if (streamMessage) {
-      setChatMessages((prev) => {
-        if (prev) {
-          const messages = prev.map((message) => {
-            if (message._id === streamMessage._id) {
-              const newStreamMessage = {
-                ...message,
-                content: streamMessage.content
-              };
-              return newStreamMessage;
-            } else return message;
-          });
-          return messages;
-        }
-      });
+    if (messagesQueryResult) {
+      const filteredMessages = messagesQueryResult.filter(
+        (message) => message._id !== streamMessage?._id
+      );
+      setMessages(filteredMessages);
     }
   }, [streamMessage, messagesQueryResult]);
 
@@ -59,7 +41,6 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
     if (streamMessage?.isStreaming) {
       if (messagesQueryResult) setIsSkipping(true);
     } else setIsSkipping(false);
-    console.log("Is streaming:", streamMessage?.isStreaming);
   }, [streamMessage?.isStreaming, messagesQueryResult]);
 
   useEffect(() => {
@@ -72,6 +53,21 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
     messagesQueryResult,
     removeStreamMessage
   ]);
+
+  const chatMessages = useMemo(() => {
+    if (!messages) return undefined;
+
+    const chatMessages = [...messages];
+
+    if (
+      streamMessage &&
+      !chatMessages.some((m) => m._id === streamMessage._id)
+    ) {
+      chatMessages.push(streamMessage);
+    }
+
+    return chatMessages;
+  }, [messages, streamMessage]);
 
   return {
     chatMessages,
