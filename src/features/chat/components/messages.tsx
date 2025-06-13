@@ -1,6 +1,7 @@
 // import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
 import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
+import useAutoScroll from "@/features/chat/hooks/use-auto-scroll";
 import useChatMessages from "@/features/chat/hooks/use-chat-messages";
 import useDisplayNewChatFirstMessage from "@/features/chat/hooks/use-display-new-chat-first-message";
 import type { Id } from "backend/_generated/dataModel";
@@ -12,11 +13,19 @@ const ChatMessages = memo(function ChatMessages({
 }: {
   chatId: Id<"chats">;
 }) {
-  const chatMessages = useChatMessages({ chatId });
+  const { chatMessages, isStreaming } = useChatMessages({ chatId });
   const isDisplayed = useDisplayNewChatFirstMessage({ chatId, chatMessages });
+  const { messagesContainerRef, messagesEndRef, handleScroll } = useAutoScroll({
+    messages: chatMessages,
+    isStreaming
+  });
 
   return (
-    <div className="flex w-full flex-1 flex-col gap-y-6">
+    <div
+      className="flex w-full flex-1 flex-col gap-y-6"
+      ref={messagesContainerRef}
+      onScroll={handleScroll}
+    >
       {isDisplayed && <NewChatFirstMessage />}
       {chatMessages &&
         chatMessages.map((message) => {
@@ -29,6 +38,7 @@ const ChatMessages = memo(function ChatMessages({
             />
           );
         })}
+      <div ref={messagesEndRef} />
     </div>
   );
 });

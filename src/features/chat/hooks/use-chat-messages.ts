@@ -59,6 +59,7 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
     if (streamMessage?.isStreaming) {
       if (messagesQueryResult) setIsSkipping(true);
     } else setIsSkipping(false);
+    console.log("Is streaming:", streamMessage?.isStreaming);
   }, [streamMessage?.isStreaming, messagesQueryResult]);
 
   useEffect(() => {
@@ -72,7 +73,10 @@ function useChatMessages({ chatId }: { chatId: Id<"chats"> }) {
     removeStreamMessage
   ]);
 
-  return chatMessages;
+  return {
+    chatMessages,
+    isStreaming: streamMessage?.isStreaming ?? false
+  };
 }
 
 export default useChatMessages;
