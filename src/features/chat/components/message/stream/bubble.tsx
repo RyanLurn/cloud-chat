@@ -1,5 +1,6 @@
 import MessageAvatar from "@/features/chat/components/message/avatar";
 import MessageContent from "@/features/chat/components/message/content";
+import ResumableStream from "@/features/chat/components/message/stream/resumable";
 import useStreamStore from "@/features/chat/stores/stream";
 import type { Id } from "backend/_generated/dataModel";
 
@@ -20,7 +21,11 @@ function StreamMessageBubble({
       <MessageAvatar role={role} name={name} />
       <div className="flex flex-col gap-y-2">
         <div className="text-lg font-semibold">Nimbus</div>
-        <MessageContent content={streamContent || "*Thinking...*"} />
+        {streamContent ? (
+          <MessageContent content={streamContent || "*Thinking...*"} />
+        ) : (
+          <ResumableStream streamId={streamId} />
+        )}
       </div>
     </div>
   );

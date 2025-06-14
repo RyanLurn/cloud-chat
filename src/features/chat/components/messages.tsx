@@ -1,6 +1,6 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
-import StreamMessageBubble from "@/features/chat/components/message/stream";
+import StreamMessageBubble from "@/features/chat/components/message/stream/bubble";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
