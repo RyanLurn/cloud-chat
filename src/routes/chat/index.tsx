@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useUser } from "@clerk/clerk-react";
 import ScreenLoader from "@/components/screen-loader";
 import PromptContainer from "@/features/chat/components/prompt/container";
-import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
-import useDisplayNewChatFirstMessage from "@/features/chat/hooks/use-display-new-chat-first-message";
+import useNewChatStore from "@/features/chat/stores/new-chat";
+import MessageBubble from "@/features/chat/components/message/bubble";
 
 export const Route = createFileRoute("/chat/")({
   component: NewChatPage
@@ -11,17 +11,19 @@ export const Route = createFileRoute("/chat/")({
 
 function NewChatPage() {
   const { user } = useUser();
-  const isDisplayed = useDisplayNewChatFirstMessage({
-    chatMessages: undefined
-  });
+  const firstMessage = useNewChatStore((state) => state.firstMessage);
 
   if (!user) return <ScreenLoader parentName="new chat page" />;
 
   return (
     <>
-      {isDisplayed ? (
+      {firstMessage ? (
         <div className="w-full flex-1">
-          <NewChatFirstMessage />
+          <MessageBubble
+            role={firstMessage.role}
+            name={firstMessage.name}
+            content={firstMessage.content}
+          />
         </div>
       ) : (
         <div className="flex w-full flex-1 flex-col items-center justify-center">

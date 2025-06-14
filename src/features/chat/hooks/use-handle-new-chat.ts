@@ -1,5 +1,5 @@
 import useNewChatStore, {
-  type NewChatFirstMessageType
+  type FirstMessage
 } from "@/features/chat/stores/new-chat";
 import { useNavigate } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
@@ -8,28 +8,44 @@ import { useCallback } from "react";
 
 function useHandleNewChat() {
   const navigate = useNavigate();
-  const setNewChatFirstMessage = useNewChatStore(
-    (state) => state.setNewChatFirstMessage
+
+  const setFirstMessage = useNewChatStore((state) => state.setFirstMessage);
+  const addFirstChatMessage = useNewChatStore(
+    (state) => state.addFirstChatMessage
   );
+
   const createNewChat = useMutation(api.chat.functions.createNewChat);
   const generateChatTitle = useAction(api.ai.functions.generateChatTitle);
 
   const handleNewChat = useCallback(
-    async (newMessage: NewChatFirstMessageType) => {
-      setNewChatFirstMessage(newMessage);
+    async (firstMessage: FirstMessage) => {
+      setFirstMessage(firstMessage);
+
       const newChatId = await createNewChat();
-      setNewChatFirstMessage({
-        ...newMessage,
-        chatId: newChatId
-      });
+
       void generateChatTitle({
         chatId: newChatId,
-        firstMessageContent: newMessage.content
+        firstMessageContent: firstMessage.content
       });
+
+      addFirstChatMessage({
+        ...firstMessage,
+        chatIdParam: newChatId
+      });
+
       await navigate({ to: "/chat/$chatId", params: { chatId: newChatId } });
+
+      setFirstMessage(null);
+
       return newChatId;
     },
-    [navigate, setNewChatFirstMessage, createNewChat, generateChatTitle]
+    [
+      navigate,
+      setFirstMessage,
+      addFirstChatMessage,
+      createNewChat,
+      generateChatTitle
+    ]
   );
 
   return handleNewChat;

@@ -1,12 +1,11 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
 import StreamMessageBubble from "@/features/chat/components/message/stream";
-import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
-import useDisplayNewChatFirstMessage from "@/features/chat/hooks/use-display-new-chat-first-message";
+import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
 import { useQuery } from "convex/react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 
 // Memoized because chat title and open time change will make this component's parent rerenders
 const ChatMessages = memo(function ChatMessages({
@@ -17,13 +16,29 @@ const ChatMessages = memo(function ChatMessages({
   const chatMessages = useQuery(api.message.functions.list, {
     chatId
   });
-  const isDisplayed = useDisplayNewChatFirstMessage({ chatId, chatMessages });
 
-  if (!chatMessages) return <ScreenLoader parentName="your messages" />;
+  const firstChatMessage = useNewChatStore((state) =>
+    state.firstChatMessages.find((m) => m.chatIdParam === chatId)
+  );
+  const removeFirstChatMessage = useNewChatStore(
+    (state) => state.removeFirstChatMessage
+  );
+  useEffect(() => {
+    if (chatMessages) removeFirstChatMessage(chatId);
+  }, [chatMessages, removeFirstChatMessage, chatId]);
+
+  if (!chatMessages && !firstChatMessage)
+    return <ScreenLoader parentName="your messages" />;
 
   return (
     <div className="flex w-full flex-1 flex-col gap-y-6">
-      {isDisplayed && <NewChatFirstMessage />}
+      {firstChatMessage && !chatMessages && (
+        <MessageBubble
+          role={firstChatMessage.role}
+          name={firstChatMessage.name}
+          content={firstChatMessage.content}
+        />
+      )}
       {chatMessages &&
         chatMessages.map((message) => {
           if (message.streamId === null) {

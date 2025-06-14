@@ -1,8 +1,8 @@
 import ScreenLoader from "@/components/screen-loader";
+import MessageBubble from "@/features/chat/components/message/bubble";
 import ChatMessages from "@/features/chat/components/messages";
-import NewChatFirstMessage from "@/features/chat/components/new-chat-first-message";
 import PromptContainer from "@/features/chat/components/prompt/container";
-import useDisplayNewChatFirstMessage from "@/features/chat/hooks/use-display-new-chat-first-message";
+import useNewChatStore from "@/features/chat/stores/new-chat";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -15,10 +15,9 @@ export const Route = createFileRoute("/chat/$chatId")({
 
 function ChatPage() {
   const { chatId } = Route.useParams();
-  const isDisplayed = useDisplayNewChatFirstMessage({
-    chatId: chatId as Id<"chats">,
-    chatMessages: undefined
-  });
+  const firstChatMessage = useNewChatStore((state) =>
+    state.firstChatMessages.find((m) => m.chatIdParam === chatId)
+  );
 
   try {
     const chat = useQuery(api.chat.functions.getChatById, {
@@ -29,9 +28,13 @@ function ChatPage() {
       <>
         {chat ? (
           <ChatMessages chatId={chat._id} />
-        ) : isDisplayed ? (
+        ) : firstChatMessage ? (
           <div className="w-full flex-1">
-            <NewChatFirstMessage />
+            <MessageBubble
+              role={firstChatMessage.role}
+              name={firstChatMessage.name}
+              content={firstChatMessage.content}
+            />
           </div>
         ) : (
           <ScreenLoader parentName="your chat" />

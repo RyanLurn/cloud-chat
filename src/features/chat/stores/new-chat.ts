@@ -1,26 +1,42 @@
-import type { Id } from "backend/_generated/dataModel";
 import { create } from "zustand";
 
-type NewChatFirstMessageType = {
+interface FirstMessage {
   role: "user";
   name: string;
   content: string;
-  chatId?: Id<"chats">;
-};
-
-interface NewChatStore {
-  newChatFirstMessage: NewChatFirstMessageType | null;
-  setNewChatFirstMessage: (
-    newChatFirstMessage: NewChatFirstMessageType | null
-  ) => void;
 }
 
-const useNewChatStore = create<NewChatStore>()((set) => ({
-  newChatFirstMessage: null,
-  setNewChatFirstMessage: (
-    newChatFirstMessage: NewChatFirstMessageType | null
-  ) => set({ newChatFirstMessage })
+interface FirstChatMessage extends FirstMessage {
+  chatIdParam: string;
+}
+
+interface NewChatStore {
+  firstMessage: FirstMessage | null;
+  firstChatMessages: FirstChatMessage[];
+  setFirstMessage: (message: FirstMessage | null) => void;
+  addFirstChatMessage: (message: FirstChatMessage) => void;
+  removeFirstChatMessage: (chatIdParam: string) => void;
+}
+
+const useNewChatStore = create<NewChatStore>((set) => ({
+  firstMessage: null,
+  firstChatMessages: [],
+  setFirstMessage: (message: FirstMessage | null) => {
+    set({ firstMessage: message });
+  },
+  addFirstChatMessage: (message: FirstChatMessage) => {
+    set((state) => ({
+      firstChatMessages: [...state.firstChatMessages, message]
+    }));
+  },
+  removeFirstChatMessage: (chatIdParam: string) => {
+    set((state) => ({
+      firstChatMessages: state.firstChatMessages.filter(
+        (m) => m.chatIdParam !== chatIdParam
+      )
+    }));
+  }
 }));
 
 export default useNewChatStore;
-export type { NewChatFirstMessageType };
+export type { FirstMessage };
