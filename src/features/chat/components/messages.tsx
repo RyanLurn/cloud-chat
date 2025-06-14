@@ -33,11 +33,18 @@ const ChatMessages = memo(function ChatMessages({
   return (
     <div className="flex w-full flex-1 flex-col gap-y-6">
       {firstChatMessage && !chatMessages && (
-        <MessageBubble
-          role={firstChatMessage.role}
-          name={firstChatMessage.name}
-          content={firstChatMessage.content}
-        />
+        <>
+          <MessageBubble
+            role={firstChatMessage.role}
+            name={firstChatMessage.name}
+            content={firstChatMessage.content}
+          />
+          <MessageBubble
+            role="assistant"
+            name="Nimbus"
+            content="*Thinking...*"
+          />
+        </>
       )}
       {chatMessages &&
         chatMessages.map((message) => {

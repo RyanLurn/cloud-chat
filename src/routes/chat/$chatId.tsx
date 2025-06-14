@@ -29,11 +29,16 @@ function ChatPage() {
         {chat ? (
           <ChatMessages chatId={chat._id} />
         ) : firstChatMessage ? (
-          <div className="w-full flex-1">
+          <div className="flex w-full flex-1 flex-col gap-y-6">
             <MessageBubble
               role={firstChatMessage.role}
               name={firstChatMessage.name}
               content={firstChatMessage.content}
+            />
+            <MessageBubble
+              role="assistant"
+              name="Nimbus"
+              content="*Thinking...*"
             />
           </div>
         ) : (

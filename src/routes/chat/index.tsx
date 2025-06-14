@@ -18,11 +18,16 @@ function NewChatPage() {
   return (
     <>
       {firstMessage ? (
-        <div className="w-full flex-1">
+        <div className="flex w-full flex-1 flex-col gap-y-6">
           <MessageBubble
             role={firstMessage.role}
             name={firstMessage.name}
             content={firstMessage.content}
+          />
+          <MessageBubble
+            role="assistant"
+            name="Nimbus"
+            content="*Thinking...*"
           />
         </div>
       ) : (
