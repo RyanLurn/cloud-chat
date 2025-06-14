@@ -17,9 +17,7 @@ function useHandleSend() {
   const stopSending = usePromptStore((state) => state.stopSending);
 
   const { user } = useUser();
-  const addMessagePairToChat = useMutation(
-    api.message.functions.addMessagePairToChat
-  );
+  const addMessagePairToChat = useMutation(api.message.functions.send);
   const handleAiStream = useHandleAiStream();
 
   const handleSend = useCallback(async () => {
@@ -40,11 +38,11 @@ function useHandleSend() {
       chatId = await handleNewChat(userMessage);
     }
 
-    const { streamMessage } = await addMessagePairToChat({
+    const { assistantMessageId, streamId } = await addMessagePairToChat({
       ...userMessage,
       chatId
     });
-    await handleAiStream({ streamMessage, chatId });
+    await handleAiStream({ assistantMessageId, streamId, chatId });
 
     stopSending();
   }, [

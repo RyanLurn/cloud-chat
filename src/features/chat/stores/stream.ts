@@ -1,54 +1,35 @@
-import type { Doc, Id } from "backend/_generated/dataModel";
+import type { Id } from "backend/_generated/dataModel";
 import { create } from "zustand";
 
+interface HttpStream {
+  id: Id<"streams">;
+  content: string;
+}
+
 interface StreamStore {
-  streamMessages: Doc<"messages">[];
-  addStreamMessage: (streamMessage: Doc<"messages">) => void;
-  removeStreamMessage: (targetMessageId: Id<"messages">) => void;
-  addStreamingContent: (
-    targetMessageId: Id<"messages">,
-    addedContent: string
-  ) => void;
-  finishStreaming: (targetMessageId: Id<"messages">) => void;
+  streams: HttpStream[];
+  addStream: (streamId: Id<"streams">) => void;
+  removeStream: (streamId: Id<"streams">) => void;
+  updateStreamContent: (streamId: Id<"streams">, addedContent: string) => void;
 }
 
 const useStreamStore = create<StreamStore>()((set) => ({
-  streamMessages: [],
-  addStreamMessage: (streamMessage: Doc<"messages">) =>
+  streams: [],
+  addStream: (streamId: Id<"streams">) =>
     set((state) => ({
-      streamMessages: [...state.streamMessages, streamMessage]
+      streams: [...state.streams, { id: streamId, content: "" }]
     })),
-  removeStreamMessage: (targetMessageId: Id<"messages">) =>
+  removeStream: (streamId: Id<"streams">) =>
     set((state) => ({
-      streamMessages: state.streamMessages.filter(
-        (message) => message._id !== targetMessageId
-      )
+      streams: state.streams.filter((stream) => stream.id !== streamId)
     })),
-  addStreamingContent: (
-    targetMessageId: Id<"messages">,
-    addedContent: string
-  ) =>
+  updateStreamContent: (streamId: Id<"streams">, addedContent: string) =>
     set((state) => ({
-      streamMessages: state.streamMessages.map((message) => {
-        if (message._id === targetMessageId) {
-          return {
-            ...message,
-            content: message.content + addedContent
-          };
+      streams: state.streams.map((stream) => {
+        if (stream.id === streamId) {
+          return { ...stream, content: stream.content + addedContent };
         }
-        return message;
-      })
-    })),
-  finishStreaming: (targetMessageId: Id<"messages">) =>
-    set((state) => ({
-      streamMessages: state.streamMessages.map((message) => {
-        if (message._id === targetMessageId) {
-          return {
-            ...message,
-            isStreaming: false
-          };
-        }
-        return message;
+        return stream;
       })
     }))
 }));

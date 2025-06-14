@@ -2,8 +2,7 @@ import { defineTable } from "convex/server";
 import { v } from "convex/values";
 
 const streamFields = {
-  content: v.string(),
-  name: v.string()
+  content: v.string()
 };
 
 const StreamInputSchema = v.object(streamFields);

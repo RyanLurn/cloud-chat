@@ -2,8 +2,10 @@ import { env } from "@/lib/env";
 import type { AiStreamRequestBodyType } from "backend/ai/lib/validator";
 
 async function fetchAiStream({
-  streamMessageId,
+  assistantMessageId,
+  streamId,
   chatId,
+  isResumable,
   token
 }: AiStreamRequestBodyType & { token: string | null }) {
   const convexUrl = env.VITE_CONVEX_URL.replace(/\.cloud$/, ".site");
@@ -13,7 +15,12 @@ async function fetchAiStream({
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json"
     },
-    body: JSON.stringify({ streamMessageId, chatId })
+    body: JSON.stringify({
+      assistantMessageId,
+      streamId,
+      chatId,
+      isResumable
+    })
   });
   return response;
 }

@@ -10,7 +10,10 @@ const send = mutation({
     name: v.string(),
     chatId: v.id("chats")
   },
-  returns: v.id("messages"),
+  returns: {
+    assistantMessageId: v.id("messages"),
+    streamId: v.id("streams")
+  },
   handler: async (ctx, args) => {
     const chat = await getChatAccess({ ctx, chatId: args.chatId });
     await ctx.db.insert("messages", {
@@ -19,7 +22,6 @@ const send = mutation({
       userId: chat.userId
     });
     const streamId = await ctx.db.insert("streams", {
-      name: "Nimbus",
       content: ""
     });
     const assistantMessageInput = {
@@ -34,7 +36,10 @@ const send = mutation({
       "messages",
       assistantMessageInput
     );
-    return assistantMessageId;
+    return {
+      assistantMessageId,
+      streamId
+    };
   }
 });
 

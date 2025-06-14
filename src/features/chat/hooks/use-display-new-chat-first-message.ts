@@ -28,7 +28,7 @@ function useDisplayNewChatFirstMessage({
       newChatFirstMessage &&
       newChatFirstMessage.chatId === chatId;
 
-    setIsDisplayed(shouldDisplay ?? false);
+    setIsDisplayed(shouldDisplay ?? true);
   }, [chatMessages, newChatFirstMessage, chatId]);
 
   return isDisplayed;
