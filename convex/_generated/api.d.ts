@@ -29,6 +29,7 @@ import type * as chat_lib_authorize from "../chat/lib/authorize.js";
 import type * as http from "../http.js";
 import type * as lib_systemFields from "../lib/systemFields.js";
 import type * as message_functions from "../message/functions.js";
+import type * as stream_functions from "../stream/functions.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "lib/systemFields": typeof lib_systemFields;
   "message/functions": typeof message_functions;
+  "stream/functions": typeof stream_functions;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

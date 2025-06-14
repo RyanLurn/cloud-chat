@@ -6,7 +6,7 @@ const messageFields = {
   role: v.union(v.literal("user"), v.literal("assistant")),
   content: v.string(),
   name: v.string(),
-  isStreaming: v.boolean(),
+  streamId: v.union(v.id("streams"), v.null()),
   userId: v.id("users"),
   chatId: v.id("chats")
 };

@@ -1,5 +1,9 @@
 import { api, internal } from "backend/_generated/api";
-import { action, httpAction } from "backend/_generated/server";
+import {
+  action,
+  httpAction,
+  internalMutation
+} from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
 import { APICallError, generateText, streamText } from "ai";
 import groq from "backend/ai/providers/groq";
@@ -8,9 +12,9 @@ import {
   titleGeneratorPrompt
 } from "backend/ai/prompts/titleGenerator";
 import { getCurrentIdentity } from "backend/auth/lib/authenticate";
-import { Id } from "backend/_generated/dataModel";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
-// import { hasDelimiter } from "backend/ai/lib/utils";
+import { Id } from "backend/_generated/dataModel";
+import { hasDelimiter } from "backend/ai/lib/utils";
 
 const generateChatTitle = action({
   args: {
@@ -39,6 +43,22 @@ const generateChatTitle = action({
   }
 });
 
+const finishStream = internalMutation({
+  args: {
+    assistantMessageId: v.id("messages"),
+    finalContent: v.string(),
+    streamId: v.id("streams")
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.assistantMessageId, {
+      content: args.finalContent,
+      streamId: null
+    });
+    await ctx.db.delete(args.streamId);
+  }
+});
+
 const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const body = await req.json();
@@ -49,15 +69,12 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
     return new Response("Invalid request body", { status: 400 });
   }
 
-  const { streamMessageId, chatId } = result.data;
+  const { assistantMessageId, streamId, chatId, isResumable } = result.data;
 
   try {
-    const messages = await ctx.runQuery(
-      api.message.functions.listMessagesFromChat,
-      {
-        chatId: chatId as Id<"chats">
-      }
-    );
+    const messages = await ctx.runQuery(api.message.functions.list, {
+      chatId: chatId as Id<"chats">
+    });
 
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
@@ -75,22 +92,22 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
           content += text;
           await writer.write(textEncoder.encode(text));
 
-          // if (hasDelimiter(text)) {
-          //   await ctx.runMutation(
-          //     internal.message.functions.updateStreamMessage,
-          //     {
-          //       streamMessageId: streamMessageId as Id<"messages">,
-          //       text: content,
-          //       isStreaming: true
-          //     }
-          //   );
-          // }
+          if (!isResumable) {
+            continue;
+          }
+
+          if (hasDelimiter(text)) {
+            await ctx.runMutation(internal.stream.functions.updateContent, {
+              streamId: streamId as Id<"streams">,
+              newContent: content
+            });
+          }
         }
 
-        await ctx.runMutation(internal.message.functions.updateStreamMessage, {
-          streamMessageId: streamMessageId as Id<"messages">,
-          text: content,
-          isStreaming: false
+        await ctx.runMutation(internal.ai.functions.finishStream, {
+          assistantMessageId: assistantMessageId as Id<"messages">,
+          finalContent: content,
+          streamId: streamId as Id<"streams">
         });
 
         await writer.close();
@@ -121,4 +138,4 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   }
 });
 
-export { generateChatTitle, aiStreamEndpointHandler };
+export { generateChatTitle, finishStream, aiStreamEndpointHandler };
