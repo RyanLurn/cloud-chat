@@ -6,11 +6,13 @@ import { useQuery } from "convex/react";
 function ResumableStream({
   id,
   isStreaming,
-  streamId
+  streamId,
+  scrollToBottom
 }: {
   id: Id<"messages">;
   isStreaming: boolean;
   streamId: Id<"streams">;
+  scrollToBottom: () => void;
 }) {
   const resumableContent = useQuery(api.stream.functions.getContent, {
     streamId
@@ -20,6 +22,7 @@ function ResumableStream({
       id={id}
       content={resumableContent || ""}
       isStreaming={isStreaming}
+      scrollToBottom={scrollToBottom}
     />
   );
 }

@@ -31,14 +31,22 @@ function ChatPage() {
         ) : firstChatMessage ? (
           <div className="flex w-full flex-1 flex-col gap-y-6">
             <MessageBubble
+              id={crypto.randomUUID() as Id<"messages">}
               role={firstChatMessage.role}
               name={firstChatMessage.name}
               content={firstChatMessage.content}
+              isStreaming={false}
+              streamId={null}
+              scrollToBottom={() => {}}
             />
             <MessageBubble
+              id={crypto.randomUUID() as Id<"messages">}
               role="assistant"
               name="Nimbus"
               content="*Thinking...*"
+              isStreaming={false}
+              streamId={null}
+              scrollToBottom={() => {}}
             />
           </div>
         ) : (

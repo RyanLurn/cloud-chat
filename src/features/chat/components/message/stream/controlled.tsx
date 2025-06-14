@@ -11,11 +11,13 @@ import { useEffect, useRef, useState } from "react";
 function ControlledStream({
   id,
   content,
-  isStreaming
+  isStreaming,
+  scrollToBottom
 }: {
   id: Id<"messages">;
   content: string;
   isStreaming: boolean;
+  scrollToBottom: () => void;
 }) {
   const [displayedContent, setDisplayedContent] = useState("");
   const [buffer, setBuffer] = useState("");
@@ -57,6 +59,10 @@ function ControlledStream({
     if (isStreaming === false && buffer.length === displayedContent.length)
       void clearStream({ messageId: id });
   });
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [displayedContent, scrollToBottom]);
 
   return <MessageContent content={displayedContent || "*Thinking...*"} />;
 }

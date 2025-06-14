@@ -6,11 +6,13 @@ import type { Id } from "backend/_generated/dataModel";
 function StreamContent({
   id,
   isStreaming,
-  streamId
+  streamId,
+  scrollToBottom
 }: {
   id: Id<"messages">;
   isStreaming: boolean;
   streamId: Id<"streams">;
+  scrollToBottom: () => void;
 }) {
   const streamContent = useStreamStore(
     (state) => state.streams.find((stream) => stream.id === streamId)?.content
@@ -18,7 +20,12 @@ function StreamContent({
 
   if (streamContent === undefined) {
     return (
-      <ResumableStream id={id} isStreaming={isStreaming} streamId={streamId} />
+      <ResumableStream
+        id={id}
+        isStreaming={isStreaming}
+        streamId={streamId}
+        scrollToBottom={scrollToBottom}
+      />
     );
   }
   return (
@@ -26,6 +33,7 @@ function StreamContent({
       id={id}
       content={streamContent}
       isStreaming={isStreaming}
+      scrollToBottom={scrollToBottom}
     />
   );
 }
