@@ -3,11 +3,25 @@ import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
 import { useQuery } from "convex/react";
 
-function ResumableStream({ streamId }: { streamId: Id<"streams"> }) {
+function ResumableStream({
+  id,
+  isStreaming,
+  streamId
+}: {
+  id: Id<"messages">;
+  isStreaming: boolean;
+  streamId: Id<"streams">;
+}) {
   const resumableContent = useQuery(api.stream.functions.getContent, {
     streamId
   });
-  return <ControlledStream content={resumableContent || ""} />;
+  return (
+    <ControlledStream
+      id={id}
+      content={resumableContent || ""}
+      isStreaming={isStreaming}
+    />
+  );
 }
 
 export default ResumableStream;

@@ -2,6 +2,7 @@ import { mutation, query } from "backend/_generated/server";
 import getChatAccess from "backend/chat/lib/authorize";
 import { v } from "convex/values";
 import { MessageOutputSchema } from "backend/message/schema";
+import getMessageAccess from "backend/message/lib/authorize";
 
 const send = mutation({
   args: {
@@ -18,6 +19,7 @@ const send = mutation({
     const chat = await getChatAccess({ ctx, chatId: args.chatId });
     await ctx.db.insert("messages", {
       ...args,
+      isStreaming: false,
       streamId: null,
       userId: chat.userId
     });
@@ -28,6 +30,7 @@ const send = mutation({
       role: "assistant",
       content: "",
       name: "Nimbus",
+      isStreaming: true,
       streamId: streamId,
       userId: chat.userId,
       chatId: chat._id
@@ -58,4 +61,38 @@ const list = query({
   }
 });
 
-export { send, list };
+const updateContent = mutation({
+  args: {
+    messageId: v.id("messages"),
+    newContent: v.string()
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const message = await getMessageAccess({ ctx, messageId: args.messageId });
+    await ctx.db.patch(message._id, {
+      content: args.newContent
+    });
+  }
+});
+
+const clearStream = mutation({
+  args: {
+    messageId: v.id("messages")
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const message = await getMessageAccess({ ctx, messageId: args.messageId });
+    if (message.isStreaming === true) {
+      return;
+    }
+    if (message.streamId === null) {
+      return;
+    }
+    await ctx.db.delete(message.streamId);
+    await ctx.db.patch(message._id, {
+      streamId: null
+    });
+  }
+});
+
+export { send, list, updateContent, clearStream };

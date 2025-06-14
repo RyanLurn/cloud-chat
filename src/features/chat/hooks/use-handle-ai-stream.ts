@@ -1,3 +1,4 @@
+import { IS_RESUMABLE } from "@/features/chat/lib/constants";
 import fetchAiStream from "@/features/chat/lib/fetch-ai-stream";
 import useStreamStore from "@/features/chat/stores/stream";
 import { useAuth } from "@clerk/clerk-react";
@@ -28,7 +29,7 @@ function useHandleAiStream() {
           assistantMessageId,
           streamId,
           chatId,
-          isResumable: false,
+          isResumable: IS_RESUMABLE,
           token
         });
 

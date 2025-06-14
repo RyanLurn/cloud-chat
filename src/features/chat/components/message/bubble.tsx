@@ -6,14 +6,18 @@ import { memo } from "react";
 
 // Memoized so that when a new message is added to the parent list, this component will not rerender
 const MessageBubble = memo(function MessageBubble({
+  id,
   role,
   name,
   content,
+  isStreaming,
   streamId
 }: {
+  id: Id<"messages">;
   role: "user" | "assistant";
   name: string;
   content: string;
+  isStreaming: boolean;
   streamId: Id<"streams"> | null;
 }) {
   return (
@@ -22,7 +26,11 @@ const MessageBubble = memo(function MessageBubble({
       <div className="flex flex-col gap-y-2">
         <div className="text-lg font-semibold">{name}</div>
         {streamId ? (
-          <StreamContent streamId={streamId} />
+          <StreamContent
+            id={id}
+            isStreaming={isStreaming}
+            streamId={streamId}
+          />
         ) : (
           <MessageContent content={content} />
         )}

@@ -34,15 +34,19 @@ const ChatMessages = memo(function ChatMessages({
       {firstChatMessage && !chatMessages && (
         <>
           <MessageBubble
+            id={crypto.randomUUID() as Id<"messages">}
             role={firstChatMessage.role}
             name={firstChatMessage.name}
             content={firstChatMessage.content}
+            isStreaming={false}
             streamId={null}
           />
           <MessageBubble
+            id={crypto.randomUUID() as Id<"messages">}
             role="assistant"
             name="Nimbus"
             content="*Thinking...*"
+            isStreaming={false}
             streamId={null}
           />
         </>
@@ -51,9 +55,11 @@ const ChatMessages = memo(function ChatMessages({
         chatMessages.map((message) => (
           <MessageBubble
             key={message._id}
+            id={message._id}
             role={message.role}
             name={message.name}
             content={message.content}
+            isStreaming={message.isStreaming}
             streamId={message.streamId}
           />
         ))}

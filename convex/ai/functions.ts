@@ -46,16 +46,14 @@ const generateChatTitle = action({
 const finishStream = internalMutation({
   args: {
     assistantMessageId: v.id("messages"),
-    finalContent: v.string(),
-    streamId: v.id("streams")
+    finalContent: v.string()
   },
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(args.assistantMessageId, {
       content: args.finalContent,
-      streamId: null
+      isStreaming: false
     });
-    await ctx.db.delete(args.streamId);
   }
 });
 
@@ -106,8 +104,7 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
 
         await ctx.runMutation(internal.ai.functions.finishStream, {
           assistantMessageId: assistantMessageId as Id<"messages">,
-          finalContent: content,
-          streamId: streamId as Id<"streams">
+          finalContent: content
         });
 
         await writer.close();
