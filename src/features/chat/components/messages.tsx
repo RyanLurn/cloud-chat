@@ -1,6 +1,5 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
-import StreamMessageBubble from "@/features/chat/components/message/stream/bubble";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -38,36 +37,26 @@ const ChatMessages = memo(function ChatMessages({
             role={firstChatMessage.role}
             name={firstChatMessage.name}
             content={firstChatMessage.content}
+            streamId={null}
           />
           <MessageBubble
             role="assistant"
             name="Nimbus"
             content="*Thinking...*"
+            streamId={null}
           />
         </>
       )}
       {chatMessages &&
-        chatMessages.map((message) => {
-          if (message.streamId === null) {
-            return (
-              <MessageBubble
-                key={message._id}
-                role={message.role}
-                name={message.name}
-                content={message.content}
-              />
-            );
-          } else {
-            return (
-              <StreamMessageBubble
-                key={message._id}
-                role={message.role}
-                name={message.name}
-                streamId={message.streamId}
-              />
-            );
-          }
-        })}
+        chatMessages.map((message) => (
+          <MessageBubble
+            key={message._id}
+            role={message.role}
+            name={message.name}
+            content={message.content}
+            streamId={message.streamId}
+          />
+        ))}
     </div>
   );
 });
