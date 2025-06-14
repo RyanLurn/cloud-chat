@@ -1,6 +1,6 @@
 import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
-import useAutoScroll from "@/features/chat/hooks/use-auto-scroll";
+import { useAutoScrollContext } from "@/features/chat/contexts/auto-scroll";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
@@ -16,8 +16,11 @@ const ChatMessages = memo(function ChatMessages({
   const chatMessages = useQuery(api.message.functions.list, {
     chatId
   });
-  const { messagesContainerRef, messagesEndRef, scrollToBottom, handleScroll } =
-    useAutoScroll();
+  const { endRef, scrollToBottom } = useAutoScrollContext();
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [chatMessages, scrollToBottom]);
 
   const firstChatMessage = useNewChatStore((state) =>
     state.firstChatMessages.find((m) => m.chatIdParam === chatId)
@@ -33,11 +36,7 @@ const ChatMessages = memo(function ChatMessages({
     return <ScreenLoader parentName="your messages" />;
 
   return (
-    <div
-      ref={messagesContainerRef}
-      onScroll={handleScroll}
-      className="flex w-full flex-1 flex-col gap-y-6"
-    >
+    <div className="flex w-full flex-1 flex-col gap-y-6">
       {firstChatMessage && !chatMessages && (
         <>
           <MessageBubble
@@ -47,7 +46,6 @@ const ChatMessages = memo(function ChatMessages({
             content={firstChatMessage.content}
             isStreaming={false}
             streamId={null}
-            scrollToBottom={scrollToBottom}
           />
           <MessageBubble
             id={crypto.randomUUID() as Id<"messages">}
@@ -56,7 +54,6 @@ const ChatMessages = memo(function ChatMessages({
             content="*Thinking...*"
             isStreaming={false}
             streamId={null}
-            scrollToBottom={scrollToBottom}
           />
         </>
       )}
@@ -70,10 +67,9 @@ const ChatMessages = memo(function ChatMessages({
             content={message.content}
             isStreaming={message.isStreaming}
             streamId={message.streamId}
-            scrollToBottom={scrollToBottom}
           />
         ))}
-      <div ref={messagesEndRef} />
+      <div ref={endRef} />
     </div>
   );
 });

@@ -11,8 +11,7 @@ const MessageBubble = memo(function MessageBubble({
   name,
   content,
   isStreaming,
-  streamId,
-  scrollToBottom
+  streamId
 }: {
   id: Id<"messages">;
   role: "user" | "assistant";
@@ -20,7 +19,6 @@ const MessageBubble = memo(function MessageBubble({
   content: string;
   isStreaming: boolean;
   streamId: Id<"streams"> | null;
-  scrollToBottom: () => void;
 }) {
   return (
     <div className="flex gap-x-2">
@@ -32,7 +30,6 @@ const MessageBubble = memo(function MessageBubble({
             id={id}
             isStreaming={isStreaming}
             streamId={streamId}
-            scrollToBottom={scrollToBottom}
           />
         ) : (
           <MessageContent content={content} />

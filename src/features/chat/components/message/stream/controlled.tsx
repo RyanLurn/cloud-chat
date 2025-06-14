@@ -1,8 +1,10 @@
 import MessageContent from "@/features/chat/components/message/content";
+import { useAutoScrollContext } from "@/features/chat/contexts/auto-scroll";
 import {
   CHARACTER_PER_INTERVAL,
   STREAM_SPEED
 } from "@/features/chat/lib/constants";
+import useStreamStore from "@/features/chat/stores/stream";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
 import { useMutation } from "convex/react";
@@ -12,18 +14,21 @@ function ControlledStream({
   id,
   content,
   isStreaming,
-  scrollToBottom
+  streamId
 }: {
   id: Id<"messages">;
   content: string;
   isStreaming: boolean;
-  scrollToBottom: () => void;
+  streamId: Id<"streams">;
 }) {
   const [displayedContent, setDisplayedContent] = useState("");
   const [buffer, setBuffer] = useState("");
   const intervalRef = useRef<number | undefined>(undefined);
 
   const clearStream = useMutation(api.message.functions.clearStream);
+  const removeStream = useStreamStore((state) => state.removeStream);
+
+  const { scrollToBottom } = useAutoScrollContext();
 
   useEffect(() => {
     setBuffer(content);
@@ -56,9 +61,21 @@ function ControlledStream({
   }, [buffer, displayedContent]);
 
   useEffect(() => {
-    if (isStreaming === false && buffer.length === displayedContent.length)
+    if (isStreaming === false && buffer.length === displayedContent.length) {
       void clearStream({ messageId: id });
-  });
+      return () => {
+        removeStream(streamId);
+      };
+    }
+  }, [
+    buffer,
+    displayedContent,
+    id,
+    isStreaming,
+    streamId,
+    clearStream,
+    removeStream
+  ]);
 
   useEffect(() => {
     scrollToBottom();

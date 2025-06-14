@@ -1,28 +1,36 @@
 import { useCallback, useRef, useState } from "react";
 
 function useAutoScroll() {
-  const messagesContainerRef = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const endRef = useRef<HTMLDivElement>(null);
   const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+  const isAutoScrollingRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
-    if (shouldAutoScroll) {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const container = containerRef.current;
+    if (shouldAutoScroll && container) {
+      isAutoScrollingRef.current = true;
+      container.scrollTop = container.scrollHeight;
+
+      requestAnimationFrame(() => {
+        isAutoScrollingRef.current = false;
+      });
     }
   }, [shouldAutoScroll]);
 
-  const handleScroll = () => {
-    const container = messagesContainerRef.current;
+  const handleScroll = useCallback(() => {
+    if (isAutoScrollingRef.current) return;
+    const container = containerRef.current;
     if (container) {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 10; // 10px threshold
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 100;
       setShouldAutoScroll(isAtBottom);
     }
-  };
+  }, []);
 
   return {
-    messagesContainerRef,
-    messagesEndRef,
+    containerRef,
+    endRef,
     scrollToBottom,
     handleScroll
   };

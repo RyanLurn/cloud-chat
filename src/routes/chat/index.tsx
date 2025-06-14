@@ -27,7 +27,6 @@ function NewChatPage() {
             content={firstMessage.content}
             isStreaming={false}
             streamId={null}
-            scrollToBottom={() => {}}
           />
           <MessageBubble
             id={crypto.randomUUID() as Id<"messages">}
@@ -36,7 +35,6 @@ function NewChatPage() {
             content="*Thinking...*"
             isStreaming={false}
             streamId={null}
-            scrollToBottom={() => {}}
           />
         </div>
       ) : (
