@@ -2,14 +2,19 @@ import AppSidebar from "@/components/app-sidebar/main";
 import AppSidebarTrigger from "@/components/app-sidebar/utils/trigger";
 import ScreenLoader from "@/components/screen-loader";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { ThemeProvider } from "@/providers/theme-provider";
+import type { AppRouterContext } from "@/providers/app";
+import { ThemeProvider } from "@/providers/theme";
 import { SignIn, UserButton } from "@clerk/clerk-react";
-import { createRootRoute, Outlet } from "@tanstack/react-router";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
-export const Route = createRootRoute({
-  component: () => (
+export const Route = createRootRouteWithContext<AppRouterContext>()({
+  component: RootLayout
+});
+
+function RootLayout() {
+  return (
     <>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <Unauthenticated>
@@ -37,5 +42,5 @@ export const Route = createRootRoute({
       </ThemeProvider>
       <TanStackRouterDevtools />
     </>
-  )
-});
+  );
+}
