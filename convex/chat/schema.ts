@@ -1,3 +1,4 @@
+import { SupportedModel } from "backend/ai/lib/models";
 import systemFields from "backend/lib/systemFields";
 import { defineTable } from "convex/server";
 import { v } from "convex/values";
@@ -5,6 +6,7 @@ import { v } from "convex/values";
 const chatFields = {
   title: v.string(),
   lastOpenTime: v.number(),
+  model: SupportedModel,
   isPublic: v.boolean(),
   userId: v.id("users")
 };

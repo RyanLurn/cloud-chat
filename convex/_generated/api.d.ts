@@ -11,10 +11,11 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference
+  FunctionReference,
 } from "convex/server";
 import type * as ai_functions from "../ai/functions.js";
 import type * as ai_lib_env from "../ai/lib/env.js";
+import type * as ai_lib_models from "../ai/lib/models.js";
 import type * as ai_lib_utils from "../ai/lib/utils.js";
 import type * as ai_lib_validator from "../ai/lib/validator.js";
 import type * as ai_prompts_titleGenerator from "../ai/prompts/titleGenerator.js";
@@ -31,6 +32,7 @@ import type * as lib_systemFields from "../lib/systemFields.js";
 import type * as message_functions from "../message/functions.js";
 import type * as message_lib_authorize from "../message/lib/authorize.js";
 import type * as stream_functions from "../stream/functions.js";
+import type * as user_functions from "../user/functions.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -43,6 +45,7 @@ import type * as stream_functions from "../stream/functions.js";
 declare const fullApi: ApiFromModules<{
   "ai/functions": typeof ai_functions;
   "ai/lib/env": typeof ai_lib_env;
+  "ai/lib/models": typeof ai_lib_models;
   "ai/lib/utils": typeof ai_lib_utils;
   "ai/lib/validator": typeof ai_lib_validator;
   "ai/prompts/titleGenerator": typeof ai_prompts_titleGenerator;
@@ -59,6 +62,7 @@ declare const fullApi: ApiFromModules<{
   "message/functions": typeof message_functions;
   "message/lib/authorize": typeof message_lib_authorize;
   "stream/functions": typeof stream_functions;
+  "user/functions": typeof user_functions;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

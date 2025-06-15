@@ -1,5 +1,5 @@
 import { defineSchema } from "convex/server";
-import { usersTable } from "backend/auth/schema";
+import { usersTable } from "backend/user/schema";
 import { chatsTable } from "backend/chat/schema";
 import { messagesTable } from "backend/message/schema";
 import { streamsTable } from "backend/stream/schema";

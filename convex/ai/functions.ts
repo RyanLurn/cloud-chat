@@ -2,7 +2,8 @@ import { api, internal } from "backend/_generated/api";
 import {
   action,
   httpAction,
-  internalMutation
+  internalMutation,
+  query
 } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
 import { APICallError, generateText, streamText } from "ai";
@@ -15,6 +16,7 @@ import { getCurrentIdentity } from "backend/auth/lib/authenticate";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
 import { Id } from "backend/_generated/dataModel";
 import { hasDelimiter } from "backend/ai/lib/utils";
+import getChatAccess from "backend/chat/lib/authorize";
 
 const generateChatTitle = action({
   args: {
@@ -40,6 +42,27 @@ const generateChatTitle = action({
       chatId: args.chatId,
       newTitle: text
     });
+  }
+});
+
+const prepareAiPayload = query({
+  args: {
+    chatId: v.id("chats")
+  },
+  handler: async (ctx, args) => {
+    const chat = await getChatAccess({ ctx, chatId: args.chatId });
+
+    const allMessages = await ctx.db
+      .query("messages")
+      .withIndex("by_chatId", (query) => query.eq("chatId", chat._id))
+      .collect();
+
+    const messages = allMessages.slice(0, -1);
+
+    return {
+      chat,
+      messages
+    };
   }
 });
 
@@ -70,9 +93,12 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   const { assistantMessageId, streamId, chatId, isResumable } = result.data;
 
   try {
-    const messages = await ctx.runQuery(api.message.functions.list, {
-      chatId: chatId as Id<"chats">
-    });
+    const { chat, messages } = await ctx.runQuery(
+      api.ai.functions.prepareAiPayload,
+      {
+        chatId: chatId as Id<"chats">
+      }
+    );
 
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
@@ -82,7 +108,7 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
       let content: string = "";
       try {
         const { textStream } = streamText({
-          model: groq("meta-llama/llama-4-maverick-17b-128e-instruct"),
+          model: groq(chat.model.name),
           messages
         });
 
@@ -135,4 +161,9 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   }
 });
 
-export { generateChatTitle, finishStream, aiStreamEndpointHandler };
+export {
+  generateChatTitle,
+  prepareAiPayload,
+  finishStream,
+  aiStreamEndpointHandler
+};

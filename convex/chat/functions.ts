@@ -3,6 +3,7 @@ import { v } from "convex/values";
 import getChatAccess from "backend/chat/lib/authorize";
 import { getCurrentUser } from "backend/auth/lib/authenticate";
 import { ChatOutputSchema } from "backend/chat/schema";
+import { SupportedModel } from "backend/ai/lib/models";
 
 const createNewChat = mutation({
   returns: v.id("chats"),
@@ -12,6 +13,7 @@ const createNewChat = mutation({
     const newChatId = await ctx.db.insert("chats", {
       title: "New chat",
       lastOpenTime: Date.now(),
+      model: user.model,
       isPublic: false,
       userId: user._id
     });
@@ -64,10 +66,23 @@ const updateChatTitle = mutation({
   }
 });
 
+const changeModel = mutation({
+  args: {
+    chatId: v.id("chats"),
+    newModel: SupportedModel
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const chat = await getChatAccess({ ctx, chatId: args.chatId });
+    await ctx.db.patch(chat._id, { model: args.newModel });
+  }
+});
+
 export {
   createNewChat,
   getChatById,
   listChatsFromUser,
   openChat,
-  updateChatTitle
+  updateChatTitle,
+  changeModel
 };
