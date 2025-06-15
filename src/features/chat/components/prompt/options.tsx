@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ModelSelection from "@/features/chat/components/prompt/model-selection";
 import usePromptStore from "@/features/chat/stores/prompt";
 import { ArrowUp, FilePlus, Loader2 } from "lucide-react";
 
@@ -8,6 +9,7 @@ function PromptOptions({ handleSend }: { handleSend: () => Promise<void> }) {
   return (
     <div className="flex w-full justify-between">
       <div className="flex gap-x-2">
+        <ModelSelection />
         <Button size="icon" variant="outline" disabled={isSending}>
           <FilePlus />
         </Button>

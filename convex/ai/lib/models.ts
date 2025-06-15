@@ -1,4 +1,4 @@
-import { v } from "convex/values";
+import { Infer, v } from "convex/values";
 
 const SupportedModel = v.union(
   v.object({
@@ -11,4 +11,7 @@ const SupportedModel = v.union(
   })
 );
 
+type SupportedModelType = Infer<typeof SupportedModel>;
+
 export { SupportedModel };
+export type { SupportedModelType };

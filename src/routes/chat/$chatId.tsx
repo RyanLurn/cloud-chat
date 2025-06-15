@@ -2,11 +2,12 @@ import ScreenLoader from "@/components/screen-loader";
 import MessageBubble from "@/features/chat/components/message/bubble";
 import ChatMessages from "@/features/chat/components/messages";
 import PromptContainer from "@/features/chat/components/prompt/container";
+import { ModelContext } from "@/features/chat/contexts/model";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { ConvexError } from "convex/values";
 
 export const Route = createFileRoute("/chat/$chatId")({
@@ -18,6 +19,7 @@ function ChatPage() {
   const firstChatMessage = useNewChatStore((state) =>
     state.firstChatMessages.find((m) => m.chatIdParam === chatId)
   );
+  const changeModel = useMutation(api.chat.functions.changeModel);
 
   try {
     const chat = useQuery(api.chat.functions.getChatById, {
@@ -50,7 +52,15 @@ function ChatPage() {
         ) : (
           <ScreenLoader parentName="your chat" />
         )}
-        <PromptContainer />
+        <ModelContext.Provider
+          value={{
+            model: chat?.model ?? null,
+            changeModel: (newModel) =>
+              changeModel({ chatId: chatId as Id<"chats">, newModel })
+          }}
+        >
+          <PromptContainer />
+        </ModelContext.Provider>
       </>
     );
   } catch (error) {

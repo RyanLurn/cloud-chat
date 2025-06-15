@@ -5,6 +5,9 @@ import PromptContainer from "@/features/chat/components/prompt/container";
 import useNewChatStore from "@/features/chat/stores/new-chat";
 import MessageBubble from "@/features/chat/components/message/bubble";
 import type { Id } from "backend/_generated/dataModel";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "backend/_generated/api";
+import { ModelContext } from "@/features/chat/contexts/model";
 
 export const Route = createFileRoute("/chat/")({
   component: NewChatPage
@@ -13,6 +16,9 @@ export const Route = createFileRoute("/chat/")({
 function NewChatPage() {
   const { user } = useUser();
   const firstMessage = useNewChatStore((state) => state.firstMessage);
+
+  const convexUser = useQuery(api.user.functions.get);
+  const changeModel = useMutation(api.user.functions.changeModel);
 
   if (!user) return <ScreenLoader parentName="new chat page" />;
 
@@ -44,7 +50,14 @@ function NewChatPage() {
           </h3>
         </div>
       )}
-      <PromptContainer />
+      <ModelContext.Provider
+        value={{
+          model: convexUser?.model ?? null,
+          changeModel: (newModel) => changeModel({ newModel })
+        }}
+      >
+        <PromptContainer />
+      </ModelContext.Provider>
     </>
   );
 }

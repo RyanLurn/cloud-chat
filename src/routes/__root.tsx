@@ -2,14 +2,13 @@ import AppSidebar from "@/components/app-sidebar/main";
 import AppSidebarTrigger from "@/components/app-sidebar/utils/trigger";
 import ScreenLoader from "@/components/screen-loader";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import type { AppRouterContext } from "@/providers/app";
 import { ThemeProvider } from "@/providers/theme";
 import { SignIn, UserButton } from "@clerk/clerk-react";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 
-export const Route = createRootRouteWithContext<AppRouterContext>()({
+export const Route = createRootRoute({
   component: RootLayout
 });
 
@@ -36,7 +35,7 @@ function RootLayout() {
         </Authenticated>
         <AuthLoading>
           <div className="h-screen w-screen">
-            <ScreenLoader parentName="Root" />
+            <ScreenLoader />
           </div>
         </AuthLoading>
       </ThemeProvider>

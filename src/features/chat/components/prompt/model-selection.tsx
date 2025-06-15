@@ -7,10 +7,41 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { useModelContext } from "@/features/chat/contexts/model";
+import type { SupportedModelType } from "backend/ai/lib/models";
 
 function ModelSelection() {
+  const { model, changeModel } = useModelContext();
+
+  async function handleModelChange(modelName: string) {
+    let newModel: SupportedModelType;
+    switch (modelName) {
+      case "meta-llama/llama-4-maverick-17b-128e-instruct":
+        newModel = {
+          provider: "groq",
+          name: "meta-llama/llama-4-maverick-17b-128e-instruct"
+        };
+        break;
+      case "deepseek-r1-distill-llama-70b":
+        newModel = {
+          provider: "groq",
+          name: "deepseek-r1-distill-llama-70b"
+        };
+        break;
+      default:
+        newModel = {
+          provider: "groq",
+          name: "meta-llama/llama-4-maverick-17b-128e-instruct"
+        };
+    }
+    await changeModel(newModel);
+  }
+
   return (
-    <Select>
+    <Select
+      value={model?.name ?? undefined}
+      onValueChange={(modelName) => void handleModelChange(modelName)}
+    >
       <SelectTrigger>
         <SelectValue placeholder="Select an AI model" />
       </SelectTrigger>
