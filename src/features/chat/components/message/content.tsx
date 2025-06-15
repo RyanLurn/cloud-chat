@@ -1,15 +1,15 @@
-import DOMPurify from "dompurify";
-import { marked } from "marked";
+import MarkdownContent from "@/features/chat/components/message/markdown";
+import ModelThought from "@/features/chat/components/message/thought";
+import extractReasoning from "@/features/chat/lib/extract-reasoning";
 
 function MessageContent({ content }: { content: string }) {
-  const rawHTML = marked.parse(content) as string;
-  const trustedHTML = DOMPurify.sanitize(rawHTML);
+  const { thinking, response } = extractReasoning(content);
 
   return (
-    <div
-      className="prose max-w-none prose-zinc dark:prose-invert prose-pre:whitespace-pre-wrap"
-      dangerouslySetInnerHTML={{ __html: trustedHTML }}
-    />
+    <div className="flex w-full flex-col gap-y-2">
+      {thinking && <ModelThought thinking={thinking} />}
+      <MarkdownContent content={response} />
+    </div>
   );
 }
 

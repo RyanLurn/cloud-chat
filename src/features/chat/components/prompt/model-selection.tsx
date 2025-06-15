@@ -14,6 +14,9 @@ function ModelSelection() {
   const { model, changeModel } = useModelContext();
 
   async function handleModelChange(modelName: string) {
+    if (modelName === model?.name) {
+      return;
+    }
     let newModel: SupportedModelType;
     switch (modelName) {
       case "meta-llama/llama-4-maverick-17b-128e-instruct":
@@ -39,11 +42,11 @@ function ModelSelection() {
 
   return (
     <Select
-      value={model?.name ?? undefined}
+      value={model?.name ?? "Select an AI model"}
       onValueChange={(modelName) => void handleModelChange(modelName)}
     >
       <SelectTrigger>
-        <SelectValue placeholder="Select an AI model" />
+        <SelectValue />
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>

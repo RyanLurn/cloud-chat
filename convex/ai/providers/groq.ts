@@ -5,4 +5,6 @@ const groq = createGroq({
   apiKey: env.GROQ_API_KEY
 });
 
-export default groq;
+const groqOptions = { reasoningFormat: "raw" };
+
+export { groq, groqOptions };

@@ -21,9 +21,9 @@ const MessageBubble = memo(function MessageBubble({
   streamId: Id<"streams"> | null;
 }) {
   return (
-    <div className="flex gap-x-2">
+    <div className="flex w-full gap-x-2">
       <MessageAvatar role={role} name={name} />
-      <div className="flex flex-col gap-y-2">
+      <div className="flex w-full flex-col gap-y-2">
         <div className="text-lg font-semibold">{name}</div>
         {streamId ? (
           <StreamContent

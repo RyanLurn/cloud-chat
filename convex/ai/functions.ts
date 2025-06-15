@@ -7,7 +7,7 @@ import {
 } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
 import { APICallError, generateText, streamText } from "ai";
-import groq from "backend/ai/providers/groq";
+import { groq, groqOptions } from "backend/ai/providers/groq";
 import {
   formatPromptForTitleGenerator,
   titleGeneratorPrompt
@@ -109,6 +109,12 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
       try {
         const { textStream } = streamText({
           model: groq(chat.model.name),
+          providerOptions:
+            chat.model.name === "deepseek-r1-distill-llama-70b"
+              ? {
+                  groq: groqOptions
+                }
+              : undefined,
           messages
         });
 
