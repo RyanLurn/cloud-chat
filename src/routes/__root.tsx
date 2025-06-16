@@ -2,6 +2,7 @@ import AppSidebar from "@/components/app-sidebar/main";
 import AppSidebarTrigger from "@/components/app-sidebar/utils/trigger";
 import ScreenLoader from "@/components/screen-loader";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/providers/theme";
 import { SignIn, UserButton } from "@clerk/clerk-react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
@@ -31,6 +32,7 @@ function RootLayout() {
                 <UserButton />
               </div>
             </main>
+            <Toaster closeButton richColors position="top-center" />
           </SidebarProvider>
         </Authenticated>
         <AuthLoading>
