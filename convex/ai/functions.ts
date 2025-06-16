@@ -6,17 +6,28 @@ import {
   query
 } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
-import { APICallError, generateText, streamText } from "ai";
-import { groq, groqOptions } from "backend/ai/providers/groq";
+import {
+  APICallError,
+  generateText,
+  JSONValue,
+  LanguageModel,
+  streamText
+} from "ai";
+import { groq } from "backend/ai/providers/groq";
 import {
   formatPromptForTitleGenerator,
   titleGeneratorPrompt
 } from "backend/ai/prompts/titleGenerator";
-import { getCurrentIdentity } from "backend/auth/lib/authenticate";
+import {
+  getCurrentIdentity,
+  getCurrentUser
+} from "backend/auth/lib/authenticate";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
 import { Id } from "backend/_generated/dataModel";
 import { hasDelimiter } from "backend/ai/lib/utils";
 import getChatAccess from "backend/chat/lib/authorize";
+import decrypt from "backend/lib/crypto/decrypt";
+import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 
 const generateChatTitle = action({
   args: {
@@ -50,7 +61,20 @@ const prepareAiPayload = query({
     chatId: v.id("chats")
   },
   handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+
     const chat = await getChatAccess({ ctx, chatId: args.chatId });
+
+    let openRouterKey: string | undefined = undefined;
+    if (chat.model.provider === "openrouter") {
+      if (user.openRouterKey) {
+        openRouterKey = await decrypt(user.openRouterKey);
+      } else {
+        throw new ConvexError(
+          "This provider requires bringing your own key. Please add it before proceeding."
+        );
+      }
+    }
 
     const allMessages = await ctx.db
       .query("messages")
@@ -61,6 +85,7 @@ const prepareAiPayload = query({
 
     return {
       chat,
+      openRouterKey,
       messages
     };
   }
@@ -93,12 +118,40 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   const { assistantMessageId, streamId, chatId, isResumable } = result.data;
 
   try {
-    const { chat, messages } = await ctx.runQuery(
+    const { chat, openRouterKey, messages } = await ctx.runQuery(
       api.ai.functions.prepareAiPayload,
       {
         chatId: chatId as Id<"chats">
       }
     );
+
+    const provider = chat.model.provider;
+    let model: LanguageModel;
+    let providerOptions: Record<string, Record<string, JSONValue>> | undefined =
+      undefined;
+    if (provider === "openrouter") {
+      const openrouter = createOpenRouter({
+        apiKey: openRouterKey
+      });
+      model = openrouter.chat(chat.model.name);
+      if (chat.model.name === "openai/o4-mini") {
+        providerOptions = {
+          openrouter: {
+            reasoning: {
+              effort: "low",
+              summary: "auto"
+            }
+          }
+        };
+      }
+    } else {
+      model = groq(chat.model.name);
+      if (chat.model.name === "deepseek-r1-distill-llama-70b") {
+        providerOptions = {
+          groq: { reasoningFormat: "parsed" }
+        };
+      }
+    }
 
     const { readable, writable } = new TransformStream();
     const writer = writable.getWriter();
@@ -106,27 +159,38 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
 
     async function streamAiResponse() {
       let content: string = "";
+      let thinkStatus: "started" | "ended" | null = null;
       try {
-        const { textStream } = streamText({
-          model: groq(chat.model.name),
-          providerOptions:
-            chat.model.name === "deepseek-r1-distill-llama-70b"
-              ? {
-                  groq: groqOptions
-                }
-              : undefined,
+        const { fullStream } = streamText({
+          model,
+          providerOptions,
           messages
         });
 
-        for await (const text of textStream) {
-          content += text;
-          await writer.write(textEncoder.encode(text));
+        for await (const streamPart of fullStream) {
+          if (streamPart.type === "reasoning") {
+            if (thinkStatus === null) {
+              content += "<think>";
+              await writer.write(textEncoder.encode("<think>"));
+              thinkStatus = "started";
+            }
+          } else if (streamPart.type === "text-delta") {
+            if (thinkStatus === "started") {
+              content += "</think>";
+              await writer.write(textEncoder.encode("</think>"));
+              thinkStatus = "ended";
+            }
+          } else {
+            continue;
+          }
+          content += streamPart.textDelta;
+          await writer.write(textEncoder.encode(streamPart.textDelta));
 
           if (!isResumable) {
             continue;
           }
 
-          if (hasDelimiter(text)) {
+          if (hasDelimiter(streamPart.textDelta)) {
             await ctx.runMutation(internal.stream.functions.updateContent, {
               streamId: streamId as Id<"streams">,
               newContent: content

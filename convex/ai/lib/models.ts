@@ -8,6 +8,18 @@ const SupportedModel = v.union(
   v.object({
     provider: v.literal("groq"),
     name: v.literal("deepseek-r1-distill-llama-70b")
+  }),
+  v.object({
+    provider: v.literal("openrouter"),
+    name: v.literal("openai/o4-mini")
+  }),
+  v.object({
+    provider: v.literal("openrouter"),
+    name: v.literal("anthropic/claude-sonnet-4")
+  }),
+  v.object({
+    provider: v.literal("openrouter"),
+    name: v.literal("deepseek/deepseek-r1-0528")
   })
 );
 
