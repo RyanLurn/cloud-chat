@@ -1,8 +1,18 @@
-import { mutation, query } from "backend/_generated/server";
+import { internal } from "backend/_generated/api";
+import {
+  action,
+  internalMutation,
+  mutation,
+  query
+} from "backend/_generated/server";
 import { SupportedModel } from "backend/ai/lib/models";
-import { getCurrentUser } from "backend/auth/lib/authenticate";
+import {
+  getCurrentIdentity,
+  getCurrentUser
+} from "backend/auth/lib/authenticate";
+import encrypt from "backend/lib/crypto/encrypt";
 import { UserOutputSchema } from "backend/user/schema";
-import { v } from "convex/values";
+import { ConvexError, v } from "convex/values";
 
 const get = query({
   returns: UserOutputSchema,
@@ -23,4 +33,50 @@ const changeModel = mutation({
   }
 });
 
-export { get, changeModel };
+const updateOpenRouterKey = internalMutation({
+  args: {
+    key: v.string()
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const user = await getCurrentUser(ctx);
+    const encryptedKey = await encrypt(args.key);
+    await ctx.db.patch(user._id, { openRouterKey: encryptedKey });
+  }
+});
+
+const saveOpenRouterKey = action({
+  args: {
+    key: v.string()
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await getCurrentIdentity(ctx);
+
+    const url = "https://openrouter.ai/api/v1/key";
+    const options = {
+      method: "GET",
+      headers: { Authorization: `Bearer ${args.key}` }
+    };
+
+    const response = await fetch(url, options);
+    if (response.status === 500) {
+      console.error("Get Key Request Internal Server Error");
+      throw new ConvexError(
+        "There's a problem with OpenRouter's api server. Please try again later."
+      );
+    }
+    if (response.status === 401) {
+      console.error("Get Key Request Unauthorized Error");
+      throw new ConvexError(
+        "Your OpenRouter key is invalid. Please enter a different key."
+      );
+    }
+
+    await ctx.runMutation(internal.user.functions.updateOpenRouterKey, {
+      key: args.key
+    });
+  }
+});
+
+export { get, changeModel, updateOpenRouterKey, saveOpenRouterKey };

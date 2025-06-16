@@ -17,7 +17,6 @@ const insertFromClerk = internalMutation({
           provider: "groq",
           name: "meta-llama/llama-4-maverick-17b-128e-instruct"
         },
-        keys: [],
         externalId: args.data.id
       });
     } else {

@@ -5,12 +5,7 @@ import systemFields from "backend/lib/systemFields";
 
 const userFields = {
   model: SupportedModel,
-  keys: v.array(
-    v.object({
-      provider: v.literal("OpenRouter"),
-      value: v.string()
-    })
-  ),
+  openRouterKey: v.optional(v.string()),
   externalId: v.string()
 };
 

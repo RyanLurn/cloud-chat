@@ -28,11 +28,17 @@ import type * as auth_webhook_verifyWebhook from "../auth/webhook/verifyWebhook.
 import type * as chat_functions from "../chat/functions.js";
 import type * as chat_lib_authorize from "../chat/lib/authorize.js";
 import type * as http from "../http.js";
+import type * as lib_crypto_constants from "../lib/crypto/constants.js";
+import type * as lib_crypto_decrypt from "../lib/crypto/decrypt.js";
+import type * as lib_crypto_encrypt from "../lib/crypto/encrypt.js";
+import type * as lib_crypto_env from "../lib/crypto/env.js";
+import type * as lib_crypto_utils from "../lib/crypto/utils.js";
 import type * as lib_systemFields from "../lib/systemFields.js";
 import type * as message_functions from "../message/functions.js";
 import type * as message_lib_authorize from "../message/lib/authorize.js";
 import type * as stream_functions from "../stream/functions.js";
 import type * as user_functions from "../user/functions.js";
+import type * as user_lib_types from "../user/lib/types.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -58,11 +64,17 @@ declare const fullApi: ApiFromModules<{
   "chat/functions": typeof chat_functions;
   "chat/lib/authorize": typeof chat_lib_authorize;
   http: typeof http;
+  "lib/crypto/constants": typeof lib_crypto_constants;
+  "lib/crypto/decrypt": typeof lib_crypto_decrypt;
+  "lib/crypto/encrypt": typeof lib_crypto_encrypt;
+  "lib/crypto/env": typeof lib_crypto_env;
+  "lib/crypto/utils": typeof lib_crypto_utils;
   "lib/systemFields": typeof lib_systemFields;
   "message/functions": typeof message_functions;
   "message/lib/authorize": typeof message_lib_authorize;
   "stream/functions": typeof stream_functions;
   "user/functions": typeof user_functions;
+  "user/lib/types": typeof user_lib_types;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
