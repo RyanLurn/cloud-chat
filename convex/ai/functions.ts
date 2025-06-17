@@ -118,6 +118,12 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
   }
 
   const { assistantMessageId, streamId, chatId, isResumable } = result.data;
+  console.log("Stream request", {
+    assistantMessageId,
+    chatId,
+    streamId,
+    isResumable
+  });
 
   try {
     const { chat, openRouterKey, messages } = await ctx.runQuery(
@@ -140,8 +146,16 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
         providerOptions = {
           openrouter: {
             reasoning: {
-              effort: "low",
-              summary: "auto"
+              effort: "low"
+            }
+          }
+        };
+      }
+      if (chat.model.name === "anthropic/claude-sonnet-4") {
+        providerOptions = {
+          openrouter: {
+            reasoning: {
+              effort: "low"
             }
           }
         };
@@ -162,6 +176,7 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
     async function streamAiResponse() {
       let content: string = "";
       let thinkStatus: "started" | "ended" | null = null;
+      const error: unknown[] = [];
       try {
         const { fullStream } = streamText({
           model,
@@ -182,9 +197,13 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
               await writer.write(textEncoder.encode("</think>"));
               thinkStatus = "ended";
             }
+          } else if (streamPart.type === "error") {
+            error.push(streamPart.error);
+            continue;
           } else {
             continue;
           }
+
           content += streamPart.textDelta;
           await writer.write(textEncoder.encode(streamPart.textDelta));
 
@@ -199,6 +218,8 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
             });
           }
         }
+
+        console.log("Errors:", error);
 
         await ctx.runMutation(internal.ai.functions.finishStream, {
           assistantMessageId: assistantMessageId as Id<"messages">,

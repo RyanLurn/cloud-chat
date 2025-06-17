@@ -50,6 +50,17 @@ function ModelSelection({ openDialog }: { openDialog: () => void }) {
         };
         break;
       }
+      case "anthropic/claude-sonnet-4": {
+        if (user?.openRouterKey === undefined) {
+          openDialog();
+          return;
+        }
+        newModel = {
+          provider: "openrouter",
+          name: "anthropic/claude-sonnet-4"
+        };
+        break;
+      }
       default:
         newModel = {
           provider: "groq",

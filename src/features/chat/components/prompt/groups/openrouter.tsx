@@ -4,6 +4,10 @@ const supportedSelections = [
   {
     label: "OpenAI o4-mini",
     value: "openai/o4-mini"
+  },
+  {
+    label: "Claude Sonnet 4",
+    value: "anthropic/claude-sonnet-4"
   }
 ];
 

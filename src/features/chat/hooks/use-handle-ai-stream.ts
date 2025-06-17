@@ -53,7 +53,9 @@ function useHandleAiStream() {
       } catch (error) {
         console.error(error);
       }
-      removeStream(streamId);
+      setTimeout(() => {
+        removeStream(streamId);
+      }, 200);
     },
     [getToken, addStream, updateStreamContent, removeStream]
   );
