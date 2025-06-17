@@ -5,13 +5,13 @@ import type { Id } from "backend/_generated/dataModel";
 import { useQuery } from "convex/react";
 
 function StreamManager({
+  messageId,
   messageContent,
-  streamId,
-  stopRendering
+  streamId
 }: {
+  messageId: Id<"messages">;
   messageContent: string;
   streamId: Id<"streams"> | null;
-  stopRendering: () => void;
 }) {
   const httpStreamContent = useStreamStore(
     (state) => state.streams.find((stream) => stream.id === streamId)?.content
@@ -30,7 +30,8 @@ function StreamManager({
   return (
     <StreamRenderer
       bufferedContent={bufferedContent}
-      stopRendering={stopRendering}
+      messageId={messageId}
+      streamId={streamId}
     />
   );
 }

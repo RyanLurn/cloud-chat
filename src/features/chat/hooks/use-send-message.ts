@@ -14,7 +14,6 @@ function useSendMessage() {
         ...args,
         _id: crypto.randomUUID() as Id<"messages">,
         _creationTime: Date.now(),
-        isStreaming: false,
         streamId: null,
         userId: crypto.randomUUID() as Id<"users">
       } as const;
@@ -24,7 +23,6 @@ function useSendMessage() {
         role: "assistant",
         content: "*Thinking...*",
         name: "Nimbus",
-        isStreaming: false,
         streamId: null,
         userId: crypto.randomUUID() as Id<"users">,
         chatId: args.chatId

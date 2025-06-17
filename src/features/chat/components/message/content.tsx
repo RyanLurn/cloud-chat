@@ -3,7 +3,7 @@ import ModelThought from "@/features/chat/components/message/thought";
 import extractReasoning from "@/features/chat/lib/extract-reasoning";
 
 function MessageContent({ content }: { content: string }) {
-  const { thinking, response } = extractReasoning(content);
+  const { thinking, response } = extractReasoning(content || "*Thinking...*");
 
   return (
     <div className="flex w-full flex-col gap-y-2">
