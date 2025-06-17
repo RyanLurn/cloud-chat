@@ -55,7 +55,7 @@ function useHandleAiStream() {
       }
       setTimeout(() => {
         removeStream(streamId);
-      }, 200);
+      }, 500);
     },
     [getToken, addStream, updateStreamContent, removeStream]
   );

@@ -4,7 +4,6 @@ function hasDelimiter(response: string) {
     response.includes(".") ||
     response.includes("?") ||
     response.includes("!") ||
-    response.includes(",") ||
     response.length > 100
   );
 }
