@@ -44,7 +44,6 @@ const ChatMessages = memo(function ChatMessages({
             role={firstChatMessage.role}
             name={firstChatMessage.name}
             content={firstChatMessage.content}
-            isStreaming={false}
             streamId={null}
           />
           <MessageBubble
@@ -52,7 +51,6 @@ const ChatMessages = memo(function ChatMessages({
             role="assistant"
             name="Nimbus"
             content="*Thinking...*"
-            isStreaming={false}
             streamId={null}
           />
         </>
@@ -65,7 +63,6 @@ const ChatMessages = memo(function ChatMessages({
             role={message.role}
             name={message.name}
             content={message.content}
-            isStreaming={message.isStreaming}
             streamId={message.streamId}
           />
         ))}

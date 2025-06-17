@@ -12,7 +12,7 @@ function useHandleSend() {
   const handleNewChat = useHandleNewChat();
 
   const setPrompt = usePromptStore((state) => state.setPrompt);
-  const startSending = usePromptStore((state) => state.startSending);
+  // const startSending = usePromptStore((state) => state.startSending);
 
   const { user } = useUser();
   const sendMessage = useSendMessage();
@@ -22,7 +22,7 @@ function useHandleSend() {
     const prompt = usePromptStore.getState().prompt;
     if (prompt.trim() === "") return;
 
-    startSending();
+    // startSending();
     setPrompt("");
 
     const userMessage = {
@@ -41,15 +41,7 @@ function useHandleSend() {
       chatId
     });
     await handleAiStream({ assistantMessageId, streamId, chatId });
-  }, [
-    handleNewChat,
-    params,
-    setPrompt,
-    startSending,
-    user,
-    handleAiStream,
-    sendMessage
-  ]);
+  }, [handleNewChat, params, setPrompt, user, handleAiStream, sendMessage]);
 
   return handleSend;
 }

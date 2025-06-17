@@ -8,6 +8,7 @@ import { useCallback } from "react";
 function useHandleAiStream() {
   const { getToken } = useAuth();
   const addStream = useStreamStore((state) => state.addStream);
+  const removeStream = useStreamStore((state) => state.removeStream);
   const updateStreamContent = useStreamStore(
     (state) => state.updateStreamContent
   );
@@ -52,8 +53,9 @@ function useHandleAiStream() {
       } catch (error) {
         console.error(error);
       }
+      removeStream(streamId);
     },
-    [getToken, addStream, updateStreamContent]
+    [getToken, addStream, updateStreamContent, removeStream]
   );
 
   return handleAiStream;

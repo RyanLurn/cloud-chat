@@ -23,7 +23,7 @@ function useAutoScroll() {
     const container = containerRef.current;
     if (container) {
       const { scrollTop, scrollHeight, clientHeight } = container;
-      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 20;
+      const isAtBottom = scrollTop + clientHeight >= scrollHeight - 40;
       setShouldAutoScroll(isAtBottom);
     }
   }, []);

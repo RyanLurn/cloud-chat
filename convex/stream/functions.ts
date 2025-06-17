@@ -8,7 +8,8 @@ const getContent = query({
   handler: async (ctx, args) => {
     await getCurrentUser(ctx);
     const stream = await ctx.db.get(args.streamId);
-    if (!stream) {
+    if (stream === null) {
+      console.warn("Stream not found");
       return "";
     }
     return stream.content;

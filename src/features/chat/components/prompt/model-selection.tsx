@@ -68,7 +68,7 @@ function ModelSelection({ openDialog }: { openDialog: () => void }) {
       value={currentModelName}
       onValueChange={(modelName) => void handleModelChange(modelName)}
     >
-      <SelectTrigger className="w-[200px]">
+      <SelectTrigger className="w-[240px]">
         <SelectValue placeholder="Select a model" />
       </SelectTrigger>
       <SelectContent>

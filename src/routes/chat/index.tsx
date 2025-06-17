@@ -25,7 +25,6 @@ function NewChatPage() {
             role={firstMessage.role}
             name={firstMessage.name}
             content={firstMessage.content}
-            isStreaming={false}
             streamId={null}
           />
           <MessageBubble
@@ -33,7 +32,6 @@ function NewChatPage() {
             role="assistant"
             name="Nimbus"
             content="*Thinking...*"
-            isStreaming={false}
             streamId={null}
           />
         </div>

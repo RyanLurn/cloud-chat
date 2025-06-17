@@ -19,7 +19,6 @@ const send = mutation({
     const chat = await getChatAccess({ ctx, chatId: args.chatId });
     await ctx.db.insert("messages", {
       ...args,
-      isStreaming: false,
       streamId: null,
       userId: chat.userId
     });
@@ -30,7 +29,6 @@ const send = mutation({
       role: "assistant",
       content: "",
       name: "Nimbus",
-      isStreaming: true,
       streamId: streamId,
       userId: chat.userId,
       chatId: chat._id
@@ -75,24 +73,4 @@ const updateContent = mutation({
   }
 });
 
-const clearStream = mutation({
-  args: {
-    messageId: v.id("messages")
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
-    const message = await getMessageAccess({ ctx, messageId: args.messageId });
-    if (message.isStreaming === true) {
-      return;
-    }
-    if (message.streamId === null) {
-      return;
-    }
-    await ctx.db.delete(message.streamId);
-    await ctx.db.patch(message._id, {
-      streamId: null
-    });
-  }
-});
-
-export { send, list, updateContent, clearStream };
+export { send, list, updateContent };
