@@ -2,7 +2,17 @@ import { marked } from "marked";
 import DOMPurify from "dompurify";
 
 function MarkdownContent({ content }: { content: string }) {
-  const rawHTML = marked.parse(content) as string;
+  const renderer = new marked.Renderer();
+  renderer.html = ({ text }: { text: string }) => {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  };
+
+  const rawHTML = marked.parse(content, { renderer }) as string;
   const trustedHTML = DOMPurify.sanitize(rawHTML);
   return (
     <div
