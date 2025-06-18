@@ -11,12 +11,11 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference
+  FunctionReference,
 } from "convex/server";
 import type * as ai_functions from "../ai/functions.js";
 import type * as ai_lib_env from "../ai/lib/env.js";
 import type * as ai_lib_models from "../ai/lib/models.js";
-import type * as ai_lib_utils from "../ai/lib/utils.js";
 import type * as ai_lib_validator from "../ai/lib/validator.js";
 import type * as ai_prompts_titleGenerator from "../ai/prompts/titleGenerator.js";
 import type * as ai_providers_groq from "../ai/providers/groq.js";
@@ -52,7 +51,6 @@ declare const fullApi: ApiFromModules<{
   "ai/functions": typeof ai_functions;
   "ai/lib/env": typeof ai_lib_env;
   "ai/lib/models": typeof ai_lib_models;
-  "ai/lib/utils": typeof ai_lib_utils;
   "ai/lib/validator": typeof ai_lib_validator;
   "ai/prompts/titleGenerator": typeof ai_prompts_titleGenerator;
   "ai/providers/groq": typeof ai_providers_groq;

@@ -18,10 +18,10 @@ import {
 } from "backend/auth/lib/authenticate";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
 import { Id } from "backend/_generated/dataModel";
-import { hasDelimiter } from "backend/ai/lib/utils";
 import getChatAccess from "backend/chat/lib/authorize";
 import decrypt from "backend/lib/crypto/decrypt";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
+import { env } from "backend/ai/lib/env";
 
 const generateChatTitle = action({
   args: {
@@ -170,6 +170,12 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
     async function streamAiResponse() {
       let content: string = "";
       let thinkStatus: "started" | "ended" | null = null;
+
+      let chunk: string = "";
+      const CHUNK_SIZE = isNaN(Number(env.CHUNK_SIZE))
+        ? 500
+        : Number(env.CHUNK_SIZE);
+
       const error: unknown[] = [];
       try {
         const { fullStream } = streamText({
@@ -204,12 +210,14 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
           if (!isResumable) {
             continue;
           }
+          chunk += streamPart.textDelta;
 
-          if (hasDelimiter(streamPart.textDelta)) {
+          if (chunk.length > CHUNK_SIZE) {
             await ctx.runMutation(internal.stream.functions.updateContent, {
               streamId: streamId as Id<"streams">,
               newContent: content
             });
+            chunk = "";
           }
         }
 
