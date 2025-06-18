@@ -14,7 +14,13 @@ import type { SupportedModelType } from "backend/ai/lib/models";
 import { useMutation, useQuery } from "convex/react";
 import { useContext } from "react";
 
-function ModelSelection({ openDialog }: { openDialog: () => void }) {
+function ModelSelection({
+  isDisabled,
+  openDialog
+}: {
+  isDisabled: boolean;
+  openDialog: () => void;
+}) {
   const chat = useContext(ChatContext);
   const changeChatModel = useMutation(api.chat.functions.changeModel);
   const user = useQuery(api.user.functions.get);
@@ -78,6 +84,7 @@ function ModelSelection({ openDialog }: { openDialog: () => void }) {
     <Select
       value={currentModelName}
       onValueChange={(modelName) => void handleModelChange(modelName)}
+      disabled={isDisabled}
     >
       <SelectTrigger className="w-[240px]">
         <SelectValue placeholder="Select a model" />

@@ -17,11 +17,10 @@ import { ConvexError } from "convex/values";
 import { useState } from "react";
 import { toast } from "sonner";
 
-function KeyDialog() {
+function KeyDialog({ isDisabled }: { isDisabled: boolean }) {
   const [key, setKey] = useState<string>("");
   const [open, setOpen] = useState<boolean>(false);
   const saveOpenRouterKey = useAction(api.user.functions.saveOpenRouterKey);
-
   function openDialog() {
     setOpen(true);
   }
@@ -47,7 +46,7 @@ function KeyDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <ModelSelection openDialog={openDialog} />
+        <ModelSelection isDisabled={isDisabled} openDialog={openDialog} />
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

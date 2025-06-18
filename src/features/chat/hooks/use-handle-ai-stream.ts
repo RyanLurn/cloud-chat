@@ -1,9 +1,15 @@
 import { IS_RESUMABLE } from "@/features/chat/lib/constants";
 import fetchAiStream from "@/features/chat/lib/fetch-ai-stream";
+import useInputDisablingStore from "@/features/chat/stores/input-disabling";
+import useRenderStore from "@/features/chat/stores/render";
 import useStreamStore from "@/features/chat/stores/stream";
 import { useAuth } from "@clerk/clerk-react";
+import { api } from "backend/_generated/api";
 import type { Id } from "backend/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { useCallback } from "react";
+import { toast } from "sonner";
 
 function useHandleAiStream() {
   const { getToken } = useAuth();
@@ -12,6 +18,12 @@ function useHandleAiStream() {
   const updateStreamContent = useStreamStore(
     (state) => state.updateStreamContent
   );
+
+  const updateMessageContent = useMutation(api.message.functions.updateContent);
+  const deleteRenderedContent = useRenderStore(
+    (state) => state.deleteRenderedContent
+  );
+  const enableChat = useInputDisablingStore((state) => state.enableChat);
 
   const handleAiStream = useCallback(
     async ({
@@ -51,13 +63,32 @@ function useHandleAiStream() {
           updateStreamContent(streamId, decoder.decode(value));
         }
       } catch (error) {
-        console.error(error);
+        const errorMessage =
+          error instanceof ConvexError
+            ? (error.data as string)
+            : "Something went wrong.";
+        deleteRenderedContent(assistantMessageId);
+        await updateMessageContent({
+          messageId: assistantMessageId,
+          newContent:
+            "Something went wrong while generating my response. Please try again."
+        });
+        toast.error(errorMessage);
+        enableChat(chatId);
       }
       setTimeout(() => {
         removeStream(streamId);
       }, 500);
     },
-    [getToken, addStream, updateStreamContent, removeStream]
+    [
+      getToken,
+      addStream,
+      updateStreamContent,
+      removeStream,
+      updateMessageContent,
+      deleteRenderedContent,
+      enableChat
+    ]
   );
 
   return handleAiStream;

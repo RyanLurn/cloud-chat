@@ -4,7 +4,9 @@ import {
   CHARACTER_PER_INTERVAL,
   STREAM_SPEED
 } from "@/features/chat/lib/constants";
+import useInputDisablingStore from "@/features/chat/stores/input-disabling";
 import useRenderStore from "@/features/chat/stores/render";
+import { useParams } from "@tanstack/react-router";
 import type { Id } from "backend/_generated/dataModel";
 import { useEffect, useRef } from "react";
 
@@ -27,6 +29,10 @@ function StreamRenderer({
     (state) => state.deleteRenderedContent
   );
   const intervalRef = useRef<number | undefined>(undefined);
+
+  const { chatId } = useParams({ strict: false });
+  const enableChat = useInputDisablingStore((state) => state.enableChat);
+
   useEffect(() => {
     if (bufferedContent.length > renderedContent.length) {
       if (intervalRef.current) {
@@ -47,6 +53,7 @@ function StreamRenderer({
       }, 1000 / STREAM_SPEED);
     } else if (streamId === null) {
       deleteRenderedContent(messageId);
+      enableChat(chatId as Id<"chats">);
     }
 
     return () => {
@@ -60,7 +67,9 @@ function StreamRenderer({
     messageId,
     setRenderedContent,
     streamId,
-    deleteRenderedContent
+    deleteRenderedContent,
+    chatId,
+    enableChat
   ]);
 
   const { scrollToBottom } = useAutoScrollContext();

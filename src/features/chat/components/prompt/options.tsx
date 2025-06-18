@@ -1,15 +1,18 @@
 import { Button } from "@/components/ui/button";
 import KeyDialog from "@/features/chat/components/prompt/key-dialog";
-import usePromptStore from "@/features/chat/stores/prompt";
 import { ArrowUp, Loader2 } from "lucide-react";
 
-function PromptOptions({ handleSend }: { handleSend: () => Promise<void> }) {
-  const isSending = usePromptStore((state) => state.isSending);
-
+function PromptOptions({
+  isDisabled,
+  handleSend
+}: {
+  isDisabled: boolean;
+  handleSend: () => Promise<void>;
+}) {
   return (
     <div className="flex w-full justify-between">
       <div className="flex gap-x-2">
-        <KeyDialog />
+        <KeyDialog isDisabled={isDisabled} />
         {/* <Button size="icon" variant="outline" disabled={isSending}>
           <FilePlus />
         </Button> */}
@@ -17,10 +20,10 @@ function PromptOptions({ handleSend }: { handleSend: () => Promise<void> }) {
       <div className="flex gap-x-2">
         <Button
           size="icon"
-          disabled={isSending}
+          disabled={isDisabled}
           onClick={() => void handleSend()}
         >
-          {isSending ? <Loader2 className="animate-spin" /> : <ArrowUp />}
+          {isDisabled ? <Loader2 className="animate-spin" /> : <ArrowUp />}
         </Button>
       </div>
     </div>

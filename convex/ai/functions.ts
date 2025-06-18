@@ -6,13 +6,7 @@ import {
   query
 } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
-import {
-  APICallError,
-  generateText,
-  JSONValue,
-  LanguageModel,
-  streamText
-} from "ai";
+import { generateText, JSONValue, LanguageModel, streamText } from "ai";
 import { groq } from "backend/ai/providers/groq";
 import {
   formatPromptForTitleGenerator,
@@ -229,10 +223,10 @@ const aiStreamEndpointHandler = httpAction(async (ctx, req) => {
 
         await writer.close();
       } catch (error) {
-        if (error instanceof APICallError) {
-          console.error("AI call error", error);
-          return new Response("Something went wrong", { status: 500 });
-        }
+        const errorMessage =
+          error instanceof ConvexError ? (error.data as string) : error;
+        console.error("Convex error occured", errorMessage);
+        return new Response("Something went wrong", { status: 500 });
       }
     }
 

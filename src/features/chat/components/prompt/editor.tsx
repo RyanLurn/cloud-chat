@@ -1,8 +1,13 @@
 import usePromptStore from "@/features/chat/stores/prompt";
 
-function PromptEditor({ handleSend }: { handleSend: () => Promise<void> }) {
+function PromptEditor({
+  isDisabled,
+  handleSend
+}: {
+  isDisabled: boolean;
+  handleSend: () => Promise<void>;
+}) {
   const prompt = usePromptStore((state) => state.prompt);
-  const isSending = usePromptStore((state) => state.isSending);
   const setPrompt = usePromptStore((state) => state.setPrompt);
 
   function handlePromptChange(event: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -23,8 +28,8 @@ function PromptEditor({ handleSend }: { handleSend: () => Promise<void> }) {
       autoFocus
       className="field-sizing-content min-h-16 resize-none focus:outline-none"
       rows={3}
-      placeholder={isSending ? "Sending..." : "Enter your message"}
-      disabled={isSending}
+      placeholder={isDisabled ? "Sending..." : "Enter your message"}
+      disabled={isDisabled}
       value={prompt}
       onChange={(e) => handlePromptChange(e)}
       onKeyDown={(e) => void handleKeyDown(e)}

@@ -6,13 +6,18 @@ import { useParams } from "@tanstack/react-router";
 import useHandleNewChat from "@/features/chat/hooks/use-handle-new-chat";
 import useHandleAiStream from "@/features/chat/hooks/use-handle-ai-stream";
 import useSendMessage from "@/features/chat/hooks/use-send-message";
+import useInputDisablingStore from "@/features/chat/stores/input-disabling";
 
 function useHandleSend() {
   const params = useParams({ strict: false });
   const handleNewChat = useHandleNewChat();
 
   const setPrompt = usePromptStore((state) => state.setPrompt);
-  // const startSending = usePromptStore((state) => state.startSending);
+  const disableNewChat = useInputDisablingStore(
+    (state) => state.disableNewChat
+  );
+  const enableNewChat = useInputDisablingStore((state) => state.enableNewChat);
+  const disableChat = useInputDisablingStore((state) => state.disableChat);
 
   const { user } = useUser();
   const sendMessage = useSendMessage();
@@ -22,7 +27,6 @@ function useHandleSend() {
     const prompt = usePromptStore.getState().prompt;
     if (prompt.trim() === "") return;
 
-    // startSending();
     setPrompt("");
 
     const userMessage = {
@@ -33,15 +37,28 @@ function useHandleSend() {
 
     let chatId: Id<"chats"> | undefined = params.chatId as Id<"chats">;
     if (!chatId) {
+      disableNewChat();
       chatId = await handleNewChat(userMessage);
+      enableNewChat();
     }
+    disableChat(chatId);
 
     const { assistantMessageId, streamId } = await sendMessage({
       userMessage,
       chatId
     });
     await handleAiStream({ assistantMessageId, streamId, chatId });
-  }, [handleNewChat, params, setPrompt, user, handleAiStream, sendMessage]);
+  }, [
+    handleNewChat,
+    params,
+    setPrompt,
+    user,
+    handleAiStream,
+    sendMessage,
+    disableNewChat,
+    enableNewChat,
+    disableChat
+  ]);
 
   return handleSend;
 }
