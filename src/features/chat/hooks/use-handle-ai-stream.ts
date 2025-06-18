@@ -1,7 +1,7 @@
-import { IS_RESUMABLE } from "@/features/chat/lib/constants";
 import fetchAiStream from "@/features/chat/lib/fetch-ai-stream";
 import useInputDisablingStore from "@/features/chat/stores/input-disabling";
 import useRenderStore from "@/features/chat/stores/render";
+import useResumableStreamsStore from "@/features/chat/stores/resumable";
 import useStreamStore from "@/features/chat/stores/stream";
 import { useAuth } from "@clerk/clerk-react";
 import { api } from "backend/_generated/api";
@@ -18,6 +18,7 @@ function useHandleAiStream() {
   const updateStreamContent = useStreamStore(
     (state) => state.updateStreamContent
   );
+  const isResumable = useResumableStreamsStore((state) => state.isResumable);
 
   const updateMessageContent = useMutation(api.message.functions.updateContent);
   const deleteRenderedContent = useRenderStore(
@@ -42,7 +43,7 @@ function useHandleAiStream() {
           assistantMessageId,
           streamId,
           chatId,
-          isResumable: IS_RESUMABLE,
+          isResumable,
           token
         });
 
@@ -83,6 +84,7 @@ function useHandleAiStream() {
     [
       getToken,
       addStream,
+      isResumable,
       updateStreamContent,
       removeStream,
       updateMessageContent,
