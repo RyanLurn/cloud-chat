@@ -1,5 +1,5 @@
-import { Id } from "backend/_generated/dataModel";
-import { MutationCtx, QueryCtx } from "backend/_generated/server";
+import type { Id } from "backend/_generated/dataModel";
+import type { MutationCtx, QueryCtx } from "backend/_generated/server";
 import { getCurrentUser } from "backend/auth/lib/authenticate";
 import { ConvexError } from "convex/values";
 

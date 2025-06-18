@@ -1,4 +1,8 @@
-import { ActionCtx, MutationCtx, QueryCtx } from "backend/_generated/server";
+import type {
+  ActionCtx,
+  MutationCtx,
+  QueryCtx
+} from "backend/_generated/server";
 import { ConvexError } from "convex/values";
 
 async function getUserByExternalId({

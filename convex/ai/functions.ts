@@ -6,7 +6,8 @@ import {
   query
 } from "backend/_generated/server";
 import { ConvexError, v } from "convex/values";
-import { generateText, JSONValue, LanguageModel, streamText } from "ai";
+import { generateText, streamText } from "ai";
+import type { JSONValue, LanguageModel } from "ai";
 import { groq } from "backend/ai/providers/groq";
 import {
   formatPromptForTitleGenerator,
@@ -17,7 +18,7 @@ import {
   getCurrentUser
 } from "backend/auth/lib/authenticate";
 import { AiStreamRequestBody } from "backend/ai/lib/validator";
-import { Id } from "backend/_generated/dataModel";
+import type { Id } from "backend/_generated/dataModel";
 import getChatAccess from "backend/chat/lib/authorize";
 import decrypt from "backend/lib/crypto/decrypt";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
