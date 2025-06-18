@@ -1,6 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@clerk/clerk-react";
 import { memo } from "react";
+import nimbusImgUrl from "@/assets/nimbus-profile.jpg";
 
 // Memoized because MessageBubble (this component's parent) can rerender because message.content changes
 const MessageAvatar = memo(function MessageAvatar({
@@ -15,7 +16,7 @@ const MessageAvatar = memo(function MessageAvatar({
 
   return (
     <Avatar>
-      <AvatarImage src={role === "user" ? user?.imageUrl : undefined} />
+      <AvatarImage src={role === "user" ? user?.imageUrl : nimbusImgUrl} />
       <AvatarFallback>{fallback}</AvatarFallback>
     </Avatar>
   );
