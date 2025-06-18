@@ -34,7 +34,7 @@ function RootLayout() {
                 <UserButton>
                   <UserButton.UserProfilePage
                     label="Keys"
-                    labelIcon={<KeyRound />}
+                    labelIcon={<KeyRound size={15} />}
                     url="keys"
                   >
                     <KeyManagement />
