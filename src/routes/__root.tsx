@@ -1,5 +1,6 @@
 import AppSidebar from "@/components/app-sidebar/main";
 import AppSidebarTrigger from "@/components/app-sidebar/utils/trigger";
+import KeyManagement from "@/components/key-management";
 import ScreenLoader from "@/components/screen-loader";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
@@ -8,6 +9,7 @@ import { SignIn, UserButton } from "@clerk/clerk-react";
 import { createRootRoute, Outlet } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import { KeyRound } from "lucide-react";
 
 export const Route = createRootRoute({
   component: RootLayout
@@ -29,7 +31,15 @@ function RootLayout() {
               <AppSidebarTrigger />
               <Outlet />
               <div className="fixed top-2 right-2">
-                <UserButton />
+                <UserButton>
+                  <UserButton.UserProfilePage
+                    label="Keys"
+                    labelIcon={<KeyRound />}
+                    url="keys"
+                  >
+                    <KeyManagement />
+                  </UserButton.UserProfilePage>
+                </UserButton>
               </div>
             </main>
             <Toaster closeButton richColors position="top-center" />

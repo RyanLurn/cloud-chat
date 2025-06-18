@@ -23,10 +23,11 @@ function ModelSelection({
 }) {
   const chat = useContext(ChatContext);
   const changeChatModel = useMutation(api.chat.functions.changeModel);
-  const user = useQuery(api.user.functions.get);
+  const userModel = useQuery(api.user.functions.getModel);
+  const hasKey = useQuery(api.user.functions.checkKey);
   const changeUserModel = useMutation(api.user.functions.changeModel);
 
-  const currentModelName = chat ? chat.model.name : user?.model.name;
+  const currentModelName = chat ? chat.model.name : userModel?.name;
 
   async function handleModelChange(modelName: string) {
     if (modelName === currentModelName) return;
@@ -46,7 +47,7 @@ function ModelSelection({
         };
         break;
       case "openai/o4-mini": {
-        if (user?.openRouterKey === undefined) {
+        if (hasKey === false) {
           openDialog();
           return;
         }
@@ -57,7 +58,7 @@ function ModelSelection({
         break;
       }
       case "anthropic/claude-sonnet-4": {
-        if (user?.openRouterKey === undefined) {
+        if (hasKey === false) {
           openDialog();
           return;
         }
@@ -75,7 +76,7 @@ function ModelSelection({
     }
     if (chat) {
       await changeChatModel({ chatId: chat._id, newModel });
-    } else if (user) {
+    } else {
       await changeUserModel({ newModel });
     }
   }

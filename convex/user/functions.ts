@@ -11,14 +11,21 @@ import {
   getCurrentUser
 } from "backend/auth/lib/authenticate";
 import encrypt from "backend/lib/crypto/encrypt";
-import { UserOutputSchema } from "backend/user/schema";
 import { ConvexError, v } from "convex/values";
 
-const get = query({
-  returns: UserOutputSchema,
+const getModel = query({
+  returns: SupportedModel,
   handler: async (ctx) => {
     const user = await getCurrentUser(ctx);
-    return user;
+    return user.model;
+  }
+});
+
+const checkKey = query({
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    return user.openRouterKey !== undefined;
   }
 });
 
@@ -79,4 +86,18 @@ const saveOpenRouterKey = action({
   }
 });
 
-export { get, changeModel, updateOpenRouterKey, saveOpenRouterKey };
+const revokeOpenRouterKey = mutation({
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    await ctx.db.patch(user._id, { openRouterKey: undefined });
+  }
+});
+
+export {
+  getModel,
+  checkKey,
+  changeModel,
+  updateOpenRouterKey,
+  saveOpenRouterKey,
+  revokeOpenRouterKey
+};
