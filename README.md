@@ -23,7 +23,7 @@ It's a web app.
 
 ### Easy to Try
 
-1. Visit this url: [cloud-chat-nu.vercel.app](https://cloud-chat-nu.vercel.app/chat)
+1. Visit this url: [cloud-chat-nu.vercel.app](https://cloud-chat-nu.vercel.app/)
 2. Create an account.
 3. Start using Cloud Chat.
 
