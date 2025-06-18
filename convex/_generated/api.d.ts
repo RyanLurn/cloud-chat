@@ -11,7 +11,7 @@
 import type {
   ApiFromModules,
   FilterApi,
-  FunctionReference,
+  FunctionReference
 } from "convex/server";
 import type * as ai_functions from "../ai/functions.js";
 import type * as ai_lib_env from "../ai/lib/env.js";
