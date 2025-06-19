@@ -69,12 +69,6 @@ These are known issues that I'm aware of. If you find any others, please let me 
 - I wanted to do too much and end up with a mess. Especially the client-side global states, they are all over the places.
 - I will write a doc for the judges or anyone who wants to navigate the repo. But I'm sorry that it would have to be after the time limit of the cloneathon.
 
-## In the near future
-
-- In the next 3 days, I will write a documentation and comments for anyone who wants to navigate the codebase and develop Cloud Chat to something of their own.
-- After that, I will have a zoomed out look of the codebase. Because I want to change it to something more maintainable and easy for other people to work in.
-- I'm actually considering a rewrite though because I made so many questionable decisions. But we'll see how the analysis goes.
-
 ## License
 
 Cloud Chat is MIT Licensed.
